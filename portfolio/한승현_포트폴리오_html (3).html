@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한승현 — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:       #0d0d0d;
+  --bg2:      #141414;
+  --bg3:      #1c1c1c;
+  --border:   #2a2a2a;
+  --border2:  #333333;
+  --text:     #e8e8e8;
+  --text2:    #c0c0c0;
+  --text3:    #aaaaaa;
+  --green:    #39ff7a;
+  --green-dim:#1a4a2e;
+  --green-mid:#2a7a4a;
+  --white:    #ffffff;
+
+  --mono: 'DM Mono', monospace;
+  --sans: 'Noto Sans KR', 'DM Sans', sans-serif;
+
+  --page-w: 210mm;
+  --pad: 13mm;
+}
+
+html { font-size: 10pt; }
+body {
+  font-family: var(--sans);
+  background: #1a1a1a;
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── PAGE ── */
+.page {
+  width: var(--page-w);
+  min-height: 297mm;
+  background: var(--bg);
+  margin: 10mm auto;
+  padding: var(--pad);
+  box-shadow: 0 0 60px rgba(57,255,122,0.04), 0 20px 60px rgba(0,0,0,0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle grid bg */
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(57,255,122,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57,255,122,0.015) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+/* ── HEADER ── */
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: end;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.name-block {}
+.name-prefix {
+  font-family: var(--mono);
+  font-size: 7pt;
+  color: var(--green);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  opacity: 0.8;
+}
+.name {
+  font-family: var(--mono);
+  font-size: 26pt;
+  font-weight: 400;
+  color: var(--white);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.name span { color: var(--green); }
+
+.title-line {
+  font-size: 8pt;
+  color: var(--text2);
+  font-weight: 300;
+  margin-top: 5px;
+  letter-spacing: 0.5px;
+}
+
+.contact-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.contact-item {
+  font-family: var(--mono);
+  font-size: 7pt;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.contact-item .dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--green);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.contact-item a { color: var(--text2); text-decoration: none; }
+.contact-item a:hover { color: var(--green); }
+
+/* ── SKILL STRIP ── */
+.skill-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.skill-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 10px;
+  position: relative;
+  overflow: hidden;
+}
+.skill-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--green);
+  opacity: 0.4;
+}
+.skill-card-label {
+  font-family: var(--mono);
+  font-size: 7pt;
+  color: var(--green);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  opacity: 0.8;
+}
+.skill-card-text {
+  font-size: 8pt;
+  color: var(--text2);
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+/* ── SECTION HEAD ── */
+.sec {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0 10px;
+}
+.sec-num {
+  font-family: var(--mono);
+  font-size: 6.5pt;
+  color: var(--green);
+  opacity: 0.6;
+}
+.sec-title {
+  font-family: var(--mono);
+  font-size: 7pt;
+  color: var(--text2);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.sec-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── SKILLS GRID ── */
+.skills-table {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 4px 10px;
+  margin-bottom: 4px;
+}
+.sk-label {
+  font-family: var(--mono);
+  font-size: 7pt;
+  color: var(--text3);
+  padding-top: 2px;
+  letter-spacing: 0.3px;
+}
+.sk-val { display: flex; flex-wrap: wrap; gap: 3px; align-items: flex-start; }
+.tag {
+  font-family: var(--mono);
+  font-size: 7pt;
+  background: var(--bg3);
+  color: var(--text2);
+  border: 1px solid var(--border2);
+  padding: 1px 6px;
+  border-radius: 2px;
+  line-height: 1.6;
+}
+
+/* ── EDU ── */
+.edu-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.edu-row:last-child { border-bottom: none; }
+.edu-name { font-size: 8.5pt; font-weight: 500; color: var(--text); }
+.edu-sub  { font-size: 7.5pt; color: var(--text3); margin-top: 1px; }
+.edu-period {
+  font-family: var(--mono);
+  font-size: 7.5pt;
+  color: var(--text3);
+  white-space: nowrap;
+}
+
+/* ── PROJECT CARD ── */
+.proj {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  page-break-inside: avoid;
+  position: relative;
+}
+.proj.featured { border-color: var(--green-mid); }
+.proj.featured::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--green);
+  border-radius: 5px 0 0 5px;
+}
+
+.proj-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+}
+.proj-name {
+  font-family: var(--mono);
+  font-size: 10pt;
+  font-weight: 500;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.proj-name .badge {
+  font-size: 6pt;
+  font-weight: 500;
+  background: var(--green);
+  color: #000000;
+  padding: 1px 5px;
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+}
+.proj-name .score {
+  font-size: 7.5pt;
+  color: var(--green);
+  opacity: 0.8;
+}
+.proj-name .sub {
+  font-size: 8pt;
+  color: var(--text2);
+  font-weight: 300;
+  font-family: var(--sans);
+}
+.proj-meta {
+  font-family: var(--mono);
+  font-size: 7pt;
+  color: var(--text3);
+  text-align: right;
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+
+.proj-desc {
+  font-size: 8pt;
+  color: var(--text2);
+  line-height: 1.65;
+  margin-bottom: 6px;
+  font-weight: 300;
+}
+
+/* 스택 박스 3열 */
+.stack-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.stack-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 6px 8px;
+  font-size: 7pt;
+  color: var(--text2);
+  line-height: 1.55;
+  font-weight: 300;
+}
+.stack-box strong {
+  display: block;
+  font-family: var(--mono);
+  font-size: 6.5pt;
+  color: var(--green);
+  font-weight: 400;
+  margin-bottom: 2px;
+  opacity: 0.85;
+}
+
+/* contrib sub-card */
+.contrib {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--green);
+  border-radius: 3px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  page-break-inside: avoid;
+}
+.contrib-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.contrib-name {
+  font-size: 8pt;
+  font-weight: 500;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.star { color: var(--green); font-size: 9pt; line-height: 1; }
+.my-part-label {
+  font-family: var(--mono);
+  font-size: 6pt;
+  color: var(--green);
+  border: 1px solid var(--green-mid);
+  padding: 0 4px;
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+}
+.contrib-meta {
+  font-family: var(--mono);
+  font-size: 7pt;
+  color: var(--text3);
+  text-align: right;
+}
+
+/* bullets */
+.bullets { list-style: none; padding: 0; margin: 3px 0 5px; }
+.bullets li {
+  font-size: 7.5pt;
+  color: var(--text2);
+  line-height: 1.6;
+  padding-left: 11px;
+  position: relative;
+  margin-bottom: 1px;
+  font-weight: 300;
+}
+.bullets li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--green);
+  font-size: 7pt;
+  opacity: 0.7;
+  top: 1px;
+}
+
+/* tags */
+.tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+.tag-g {
+  font-family: var(--mono);
+  font-size: 7pt;
+  color: var(--green);
+  opacity: 0.55;
+  border: 1px solid var(--green-dim);
+  padding: 1px 5px;
+  border-radius: 2px;
+  line-height: 1.5;
+}
+
+/* ── 42 stats ── */
+.stats-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: fit-content;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: var(--mono);
+  font-size: 14pt;
+  color: var(--green);
+  line-height: 1;
+  font-weight: 500;
+}
+.stat-label {
+  font-size: 6.5pt;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* ── PRINT ── */
+@media print {
+  body { background: var(--bg); }
+  .page { margin: 0; width: 100%; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ PAGE 1 ══════════════ -->
+<div class="page">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="name-block">
+      <div class="name-prefix">// portfolio</div>
+      <div class="name">한승현</div>
+      <div class="title-line">자율주행·모빌리티 시스템 SW 엔지니어 지망</div>
+    </div>
+    <div class="contact-block">
+      <div class="contact-item">
+        <span class="dot"></span>
+        <a href="https://github.com/tmdgus1dnl">github.com/tmdgus1dnl</a>
+      </div>
+      <div class="contact-item">
+        <span class="dot"></span>
+        <a href="https://habitual-lyre-7a3.notion.site/42-seunghan-21d1b2ec3d51800baa16f291f463c2ad">Notion — 42기록</a>
+      </div>
+      <div class="contact-item">
+        <span class="dot"></span>
+        <span>tmdgus3dnl@gmail.com</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Intro -->
+  <p style="font-size:8.5pt; color:#c8c8c8; font-weight:300; line-height:1.7; margin-bottom:14px; padding-left:1px;">
+    C/C++ 기반 시스템·통신 소프트웨어 역량을 바탕으로, 자율주행 이동체의 주행 제어, 센서 데이터 수집, 통신 중계, 상태 모니터링·관제 시스템을 통합 개발했습니다.
+  </p>
+
+  <!-- Skill Strip -->
+  <div class="skill-strip">
+    <div class="skill-card">
+      <div class="skill-card-label">시스템 SW 개발</div>
+      <div class="skill-card-text">멀티스레드 · 프로세스 동기화<br>공유 메모리 기반 고속 데이터 처리</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-label">통신 시스템</div>
+      <div class="skill-card-text">UDP · TCP/IP 기반 소켓 프로그래밍<br>논블로킹 I/O · 이벤트 루프 기반 서버 구현</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-label">자율주행 / 무인운전 SW</div>
+      <div class="skill-card-text">ROS2 · Nav2 기반 경로계획·주행 제어<br>SLAM · LiDAR 기반 위치추정·장애물 회피</div>
+    </div>
+  </div>
+
+  <!-- Technical Skills -->
+  <div class="sec">
+    <span class="sec-num">01</span>
+    <span class="sec-title">Technical Skills</span>
+    <span class="sec-line"></span>
+  </div>
+  <div class="skills-table">
+    <span class="sk-label">언어</span>
+    <div class="sk-val">
+      <span class="tag">C</span><span class="tag">C++</span><span class="tag">Python</span><span class="tag">JavaScript</span><span class="tag">Shell Script</span>
+    </div>
+    <span class="sk-label">자율주행/모빌리티</span>
+    <div class="sk-val">
+      <span class="tag">ROS2</span><span class="tag">Nav2</span><span class="tag">SLAM Toolbox</span><span class="tag">LiDAR</span>
+    </div>
+    <span class="sk-label">통신 / 관제 SW</span>
+    <div class="sk-val">
+      <span class="tag">Qt</span><span class="tag">Socket</span><span class="tag">UDP</span><span class="tag">POSIX SHM</span>
+    </div>
+    <span class="sk-label">시스템 SW</span>
+    <div class="sk-val">
+      <span class="tag">POSIX Thread</span><span class="tag">Mutex / Semaphore</span><span class="tag">kqueue</span>
+    </div>
+    <span class="sk-label">OS / 인프라</span>
+    <div class="sk-val">
+      <span class="tag">Linux</span><span class="tag">VirtualBox</span><span class="tag">Docker</span><span class="tag">docker-compose</span>
+    </div>
+    <span class="sk-label">개발·검증 도구</span>
+    <div class="sk-val">
+      <span class="tag">Git</span><span class="tag">Makefile</span><span class="tag">Valgrind</span><span class="tag">gcc sanitizers</span><span class="tag">Jira</span><span class="tag">Unity</span>
+    </div>
+  </div>
+
+  <!-- Education -->
+  <div class="sec">
+    <span class="sec-num">02</span>
+    <span class="sec-title">Education &amp; Training</span>
+    <span class="sec-line"></span>
+  </div>
+  <div class="edu-row">
+    <div>
+      <div class="edu-name">SSAFY (삼성청년SW·AI아카데미)</div>
+      <div class="edu-sub">임베디드 트랙 — 알고리즘·시스템 SW 교육 이수 및 자율주행 이동체, 통신 중계·관제 시스템 프로젝트 수행</div>
+    </div>
+    <div class="edu-period">2025.07 ~ 2026.06</div>
+  </div>
+  <div class="edu-row">
+    <div>
+      <div class="edu-name">42Seoul (이노베이션 아카데미)</div>
+      <div class="edu-sub">동료 평가 기반 C/C++ 시스템·네트워크 프로그래밍 수행</div>
+    </div>
+    <div class="edu-period">2023.10 ~ 2025.06</div>
+  </div>
+
+  <!-- Projects - SSAFY -->
+  <div class="sec">
+    <span class="sec-num">03</span>
+    <span class="sec-title">Projects — SSAFY</span>
+    <span class="sec-line"></span>
+  </div>
+
+  <!-- 다중 이동체 정찰 시스템 -->
+  <div class="proj featured">
+    <div class="proj-top">
+      <div class="proj-name">
+        SPOT GET IT
+        <span class="sub">디지털트윈 기반 다중 이동체 통신·관제 시스템</span>
+      </div>
+      <div class="proj-meta">
+        2026.04 ~ 진행 중<br>
+        6인 팀 | 통신 인프라 · Qt GUI 담당
+      </div>
+    </div>
+    <p class="proj-desc">
+      다중 이동체의 카메라·LiDAR·상태 데이터를 중계 장비에서 수집하고, 관제 GUI로 실시간 전달하는 통신·상태 모니터링 시스템입니다. 이동체-중계기-서버 PC 간 데이터 흐름을 설계하고, 운용자가 영상·센서·이동체 상태 정보를 통합 확인할 수 있도록 구현했습니다.
+    </p>
+    <div class="stack-row">
+      <div class="stack-box">
+        <strong>이동체 데이터 송신 노드</strong>
+        카메라 · LiDAR · Odom · 상태 데이터 UDP 송신
+      </div>
+      <div class="stack-box">
+        <strong>통신 중계 장비</strong>
+        데이터 수신 · 공유 메모리 IPC · Qt 관제 GUI
+      </div>
+      <div class="stack-box">
+        <strong>디지털트윈 서버</strong>
+        가상 로봇 운용 · 정찰 시나리오 시뮬레이션 · 관제 데이터 연동
+      </div>
+    </div>
+
+    <div class="contrib">
+      <div class="contrib-top">
+        <div class="contrib-name">
+          <span class="star">★</span>
+          다중 이동체 센서·상태 데이터 통신 중계 SW 구현
+          <span class="my-part-label">MY PART</span>
+        </div>
+        <div class="contrib-meta">C · POSIX Thread · UDP · Shared Memory</div>
+      </div>
+      <p class="proj-desc" style="margin-bottom:4px;">
+        이동체별 센서·상태 데이터를 분리 수신하고 관제 GUI로 전달하는 통신 중계 계층을 담당했습니다. 대용량 카메라·LiDAR 데이터를 저지연으로 전달하기 위해 공유 메모리 기반 IPC와 3중 버퍼 구조를 적용했습니다.
+      </p>
+      <ul class="bullets">
+        <li>수신·재조립·송신·Heartbeat 기능을 스레드별로 분리해 데이터 수신 지연과 처리 병목을 줄였습니다.</li>
+        <li>대용량 이미지·LiDAR 데이터를 저지연으로 전달하기 위해 공유 메모리 3중 버퍼를 설계하고, writer/reader 간 Lock 경합을 줄였습니다.</li>
+        <li>수신 스레드 ↔ 재조립 스레드 간 원형 버퍼를 사용한 생산자-소비자 구조 — 수신 스레드 블로킹 최소화, 포화 시 우선 정책 기반으로 오래된 조각 폐기</li>
+        <li>UDP MTU 초과 패킷 단편화·재조립 슬롯 구현, 100ms 타임아웃으로 불완전 패킷 자동 수거</li>
+        <li>이동체 ID 기반 패킷 분류로 다중 이동체 데이터를 분리 관리하여, 관제 GUI에서 이동체별 상태를 독립적으로 확인할 수 있도록 했습니다.</li>
+      </ul>
+      <div class="tags">
+        <span class="tag-g">#C</span><span class="tag-g">#UDP</span><span class="tag-g">#SharedMemory</span><span class="tag-g">#Communication</span><span class="tag-g">#Monitoring</span>
+      </div>
+    </div>
+
+    <div class="contrib">
+      <div class="contrib-top">
+        <div class="contrib-name">
+          <span class="star">★</span>
+          이동체-중계기-관제 시스템 간 통신 인터페이스 설계
+          <span class="my-part-label">MY PART</span>
+        </div>
+        <div class="contrib-meta">C · Binary Protocol · UDP</div>
+      </div>
+      <p class="proj-desc" style="margin-bottom:4px;">
+        이미지, LiDAR, 오도메트리, 제어 명령 데이터를 구분해 전송할 수 있도록 24바이트 고정 헤더 기반 통신 인터페이스를 설계했습니다.
+      </p>
+      <ul class="bullets">
+        <li>패킷 헤더 — 타입 · 이동체ID · 조각 인덱스/총개수 · 프레임 순번 · 페이로드 오프셋 필드로 단편화·중복 수신 방지</li>
+        <li>관제 GUI와 통신 중계 SW 간 명령 채널은 Unix Domain Socket으로 분리하고, 원격 서버 연동은 별도 UDP 포트로 분리해 데이터 채널과 제어 채널을 구분했습니다.</li>
+        <li>1Hz Heartbeat로 이동체 연결 상태를 감시하고, 연결 유실 시 안전 정지 명령을 전달할 수 있도록 설계했습니다.</li>
+      </ul>
+      <div class="tags">
+        <span class="tag-g">#Protocol</span><span class="tag-g">#Binary</span><span class="tag-g">#UDP</span><span class="tag-g">#UnixSocket</span>
+      </div>
+    </div>
+
+    <div class="contrib">
+      <div class="contrib-top">
+        <div class="contrib-name">
+          <span class="star">★</span>
+          다중 이동체 상태 모니터링·관제 시스템 개발
+          <span class="my-part-label">MY PART</span>
+        </div>
+        <div class="contrib-meta">Qt · C++ · POSIX SHM</div>
+      </div>
+      <p class="proj-desc" style="margin-bottom:4px;">
+        카메라, LiDAR, 위치, 연결 상태, 데이터 드롭 정보를 통합 표시하여 운용자가 다중 이동체 상태를 실시간으로 확인할 수 있는 GUI 기반 관제 시스템을 구현했습니다.
+      </p>
+      <ul class="bullets">
+        <li>공유 메모리 읽기 전용 스레드를 분리해 이미지 프레임을 UI로 비동기 전달하고, LiDAR 데이터는 논블로킹 방식으로 갱신해 관제 화면 렌더링 지연을 줄였습니다.</li>
+        <li>오도메트리·메타 데이터는 읽기 잠금 기반 snapshot으로 복사해 위치·상태 정보의 중간값이 화면에 노출되지 않도록 처리했습니다.</li>
+        <li>카메라 / 3D LiDAR 포인트클라우드 / 2D top-view 맵 3가지 뷰를 탭 전환으로 제공하고, 오도메트리 기반 좌표 변환으로 2D 맵에 이동체 위치를 반영했습니다.</li>
+        <li>통신 연결 상태와 데이터 드롭 카운트를 실시간 표시하여, 운용자가 데이터 수신 상태와 시스템 이상 여부를 즉시 확인할 수 있도록 구현</li>
+        <li>데이터 수신 상태, 프레임 드롭, 연결 상태를 GUI에서 확인하며 통신 중계 기능을 검증했습니다.</li>
+      </ul>
+      <div class="tags">
+        <span class="tag-g">#Qt</span><span class="tag-g">#C++</span><span class="tag-g">#SharedMemory</span><span class="tag-g">#Monitoring</span><span class="tag-g">#Validation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTOBOX -->
+  <div class="proj featured">
+    <div class="proj-top">
+      <div class="proj-name">
+        AUTOBOX
+        <span class="sub">AMR 자율주행·주행 제어 시스템</span>
+      </div>
+      <div class="proj-meta">
+        2026.01 ~ 2026.02<br>
+        6인 팀 | ROS2 인프라 · 자율주행 담당
+      </div>
+    </div>
+    <p class="proj-desc">
+      LiDAR·SLAM 기반 위치추정과 Nav2 주행 제어를 통해 AMR 이동체가 목적지까지 자율주행하는 물류 자동화 시스템입니다. 경로계획, 장애물 회피, 정밀 도킹을 통합하고 실제 주행 테스트를 통해 주행 안정성을 개선했습니다. OCR 기반 운송장 인식 결과에 따라 목적지 구역으로 이동하는 물류 자동화 시나리오를 구현했습니다.
+    </p>
+    <div class="stack-row">
+      <div class="stack-box">
+        <strong>자율주행 컴퓨팅 모듈</strong>
+        ROS2 주행 노드 · LiDAR/SLAM 위치추정 · ArUco 정밀 도킹
+      </div>
+      <div class="stack-box">
+        <strong>설비 연동·데이터 중계 장치</strong>
+        컨베이어 제어 · MQTT 게이트웨이 · Jetson-서버 상태 연동
+      </div>
+      <div class="stack-box">
+        <strong>관제 서버 / 대시보드</strong>
+        FastAPI + MySQL · WebSocket 기반 실시간 상태 모니터링
+      </div>
+    </div>
+
+    <!-- contrib 1 -->
+    <div class="contrib">
+      <div class="contrib-top">
+        <div class="contrib-name">
+          <span class="star">★</span>
+          LiDAR·SLAM 기반 자율주행 시스템 통합
+          <span class="my-part-label">MY PART</span>
+        </div>
+        <div class="contrib-meta">ROS2 Humble · Jetson Orin Nano · C++</div>
+      </div>
+      <p class="proj-desc" style="margin-bottom:4px;">
+        Jetson Orin Nano 환경에서 LiDAR, TF, SLAM, AMCL을 연동해 AMR 자율주행 시스템을 구성하고, 지도 기반 위치추정이 안정적으로 동작하도록 통합했습니다.
+      </p>
+      <ul class="bullets">
+        <li>LiDAR 드라이버를 연동해 /scan 데이터를 발행하고, TF 좌표계를 구성해 센서 데이터가 주행 시스템에서 일관되게 사용되도록 했습니다.</li>
+
+        <li>SLAM Toolbox로 실내 지도 생성, Nav2 AMCL로 운영 중 실시간 위치 추정</li>
+        <li>LiDAR 좌표계 방향 오설정으로 주행 방향이 반전되는 문제를 발견하고, TF 좌표계 검증 절차를 정립하여 자율주행 시스템의 통합 안정성 개선</li>
+      </ul>
+      <div class="tags">
+        <span class="tag-g">#ROS2</span><span class="tag-g">#SLAM</span><span class="tag-g">#LiDAR</span><span class="tag-g">#AutonomousDriving</span><span class="tag-g">#Integration</span>
+      </div>
+    </div>
+
+    <!-- contrib 2 -->
+    <div class="contrib">
+      <div class="contrib-top">
+        <div class="contrib-name">
+          <span class="star">★</span>
+          경로계획·주행 제어·장애물 회피 기능 통합 및 검증
+          <span class="my-part-label">MY PART</span>
+        </div>
+        <div class="contrib-meta">Nav2 · AMCL · ROS2</div>
+      </div>
+      <p class="proj-desc" style="margin-bottom:4px;">
+        SLAM으로 생성한 지도 위에서 Nav2 스택을 활용해 목적지까지의 경로 계획·주행·장애물 회피를 구현했습니다.
+      </p>
+      <ul class="bullets">
+        <li>차량형 AMR 플랫폼의 회전 반경 제약을 고려해 Nav2 Local Planner를 조정하고, 후진 경로를 지원하도록 설정했습니다.</li>
+        <li>Static Costmap(지도) + Obstacle Layer(LiDAR 실시간) + Inflation Layer 조합으로 충돌 방지</li>
+        <li>Global Planner로 전체 경로를 생성하고, 장애물 발생 시 Local Costmap 갱신을 통해 경로 재계획이 가능하도록 구성했습니다.</li>
+        <li>AMR 플랫폼의 회전 반경 제약으로 목표점 근처 oscillation 발생 → 주행 테스트 기반으로 회전 반경·재계획 주기 파라미터를 조정해 주행 안정성 개선</li>
+        <li>반복 운행 시 저장된 Goal Pose로 복귀하도록 구성하고, 누적 위치 오차는 ArUco 기반 정밀 도킹 후 초기화하여 반복 운행 안정성을 확보했습니다.</li>
+        <li>실제 주행 테스트를 통해 위치추정, 경로계획, 장애물 회피, 목표점 도달 안정성을 반복 검증했습니다.</li>
+      </ul>
+      <div class="tags">
+        <span class="tag-g">#Nav2</span><span class="tag-g">#AutonomousDriving</span><span class="tag-g">#SLAM</span><span class="tag-g">#Costmap</span><span class="tag-g">#Validation</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page 1 -->
+
+
+<!-- ══════════════ PAGE 2 ══════════════ -->
+<div class="page">
+
+  <div class="sec" style="margin-top:0;">
+    <span class="sec-num">04</span>
+    <span class="sec-title">System Software Projects — 42Seoul</span>
+    <span class="sec-line"></span>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-item"><div class="stat-num">10+</div><div class="stat-label">완료 프로젝트</div></div>
+    <div class="stat-item"><div class="stat-num">113%</div><div class="stat-label">평균 점수</div></div>
+    <div class="stat-item"><div class="stat-num">3건</div><div class="stat-label">팀 프로젝트</div></div>
+  </div>
+
+  <!-- Philosophers -->
+  <div class="proj featured">
+    <div class="proj-top">
+      <div class="proj-name">
+        Philosophers
+        <span class="badge">HIGHLIGHT</span>
+        <span class="score">125/125</span>
+      </div>
+      <div class="proj-meta">2024 · 3주 | C · POSIX Thread</div>
+    </div>
+    <p class="proj-desc">
+      공유 자원 접근, 스레드 동기화, 데드락 방지, Data Race 검증을 다루며 안정적인 동시성 제어 구조를 구현했습니다.
+    </p>
+    <ul class="bullets">
+      <li>포크(공유 자원)마다 개별 뮤텍스 생성 — 락 경합을 세분화해 불필요한 대기 최소화</li>
+      <li>짝수/홀수 번째 철학자에 식사 시간의 절반만큼 시간차 부여 → 데드락을 구조적으로 방지</li>
+      <li>세마포어 대기열로 전체 프로세스 동기화, 모니터링 프로세스로 사망 감지</li>
+      <li>Thread Sanitizer로 Data Race를 검출하고, 공유 변수 접근 범위 축소와 상태 플래그 분리로 동시성 오류를 해결했습니다.</li>
+    </ul>
+    <div class="tags">
+      <span class="tag-g">#pthread</span><span class="tag-g">#mutex</span><span class="tag-g">#semaphore</span><span class="tag-g">#deadlock</span><span class="tag-g">#data-race</span>
+    </div>
+  </div>
+
+  <!-- webserv -->
+  <div class="proj featured">
+    <div class="proj-top">
+      <div class="proj-name">
+        webserv
+        <span class="badge">HIGHLIGHT</span>
+        <span class="score">110/125</span>
+      </div>
+      <div class="proj-meta">2024 · 1개월 · 팀 3인 | C++ · kqueue</div>
+    </div>
+    <p class="proj-desc">
+      HTTP/1.1 서버를 C++로 구현했습니다.
+      kqueue 이벤트 루프로 논블로킹 I/O를 구현해 단일 스레드로 다수 클라이언트를 처리합니다. 소켓 기반 통신 처리, 이벤트 기반 I/O, 상태 머신 파싱을 통해 시스템 SW와 통신 처리 기반을 다졌습니다.
+    </p>
+    <ul class="bullets">
+      <li>kqueue 이벤트 루프 — 소켓 읽기/쓰기 이벤트를 감시해 클라이언트 연결 수락·데이터 송수신 모두 논블로킹으로 처리</li>
+      <li>HTTP 파서 — 상태 머신 기반으로 요청 라인·헤더·바디 파싱, chunked 인코딩 지원</li>
+      <li>설정 파일 파서 — nginx 유사 문법으로 서버 블록(포트, 도메인, 경로 등) 파싱</li>
+      <li>CGI — execve + pipe로 외부 프로세스 실행, 표준 입출력 리디렉션 및 타임아웃 처리</li>
+    </ul>
+    <div class="tags">
+      <span class="tag-g">#kqueue</span><span class="tag-g">#non-blocking I/O</span><span class="tag-g">#socket</span><span class="tag-g">#SystemSoftware</span><span class="tag-g">#Communication</span>
+    </div>
+  </div>
+
+  <!-- Minishell -->
+  <div class="proj">
+    <div class="proj-top">
+      <div class="proj-name">Minishell <span class="score">100/100</span></div>
+      <div class="proj-meta">2024 · 2개월 · 팀 2인 | C · Shell</div>
+    </div>
+    <p class="proj-desc">bash를 모방한 미니 셸 구현. 파싱 파트 전담으로 AST 기반 설계를 주도했습니다.</p>
+    <ul class="bullets">
+      <li>토크나이저 — 공백/쿼터/특수문자/환경변수를 상태 머신으로 처리</li>
+      <li>AST(Syntax Parsing Tree) — 파이프 기준 분할, 리디렉션 노드, 전위 순회로 실행</li>
+      <li>환경변수 확장을 실행 직전에 처리해 export 실시간 반영</li>
+    </ul>
+    <div class="tags">
+      <span class="tag-g">#Shell</span><span class="tag-g">#Parser</span><span class="tag-g">#AST</span><span class="tag-g">#pipe</span><span class="tag-g">#fork</span><span class="tag-g">#dup2</span>
+    </div>
+  </div>
+
+  <!-- Inception -->
+  <div class="proj">
+    <div class="proj-top">
+      <div class="proj-name">Inception <span class="score">100/100</span></div>
+      <div class="proj-meta">2024 · 3주 | Docker · Shell Script</div>
+    </div>
+    <p class="proj-desc">Docker 컨테이너 3개를 직접 빌드해 nginx → WordPress+PHP-FPM → MariaDB 서비스 체인을 구성했습니다.</p>
+    <ul class="bullets">
+      <li>각 컨테이너를 Dockerfile로 빌드, PID 1 프로세스 관리로 좀비 프로세스 방지</li>
+      <li>docker-compose로 컨테이너 간 네트워크를 격리해 서비스 간 통신 구성</li>
+      <li>환경변수 주입 타이밍 문제, 볼륨 마운트 충돌 등 배포 과정에서 발생한 트러블슈팅</li>
+    </ul>
+    <div class="tags">
+      <span class="tag-g">#Docker</span><span class="tag-g">#docker-compose</span><span class="tag-g">#Nginx</span><span class="tag-g">#MariaDB</span><span class="tag-g">#PHP-FPM</span>
+    </div>
+  </div>
+
+  <!-- born2beroot -->
+  <div class="proj">
+    <div class="proj-top">
+      <div class="proj-name">born2beroot <span class="score">125/125</span></div>
+      <div class="proj-meta">2023 · 1주 | Debian · VirtualBox</div>
+    </div>
+    <p class="proj-desc">VirtualBox 위에 Debian 가상 서버를 구축하고 보안 정책을 설정했습니다.</p>
+    <ul class="bullets">
+      <li>LVM 파티셔닝, UFW 방화벽, SSH 포트 설정, AppArmor 정책 구성</li>
+      <li>SUDO 그룹 제한, 비밀번호 복잡도 정책, CRON 기반 모니터링 스크립트 작성</li>
+      <li>웹 서버(lighttpd) + WordPress 환경 구성 및 Fail2ban으로 무차별 대입 공격 방어 설정</li>
+    </ul>
+    <div class="tags">
+      <span class="tag-g">#Linux</span><span class="tag-g">#VirtualBox</span><span class="tag-g">#LVM</span><span class="tag-g">#UFW</span><span class="tag-g">#SSH</span><span class="tag-g">#AppArmor</span>
+    </div>
+  </div>
+
+  <!-- 기타 -->
+  <div class="proj">
+    <div class="proj-top">
+      <div class="proj-name" style="font-size:8.5pt;">push_swap / FdF / GNL / ft_printf / libft <span class="score">100~125/125</span></div>
+      <div class="proj-meta">2023 | C · 기초</div>
+    </div>
+    <p class="proj-desc">알고리즘, 그래픽스, 라이브러리 구현 프로젝트입니다.</p>
+    <ul class="bullets">
+      <li>push_swap: 자체 그리디 알고리즘 설계 — gap 기반 연산 비용 계산, 스택 연산 최소화</li>
+      <li>FdF: 삼각함수 기반 등각 투영 행렬, Bresenham 선 그리기 알고리즘 구현</li>
+      <li>GNL / ft_printf / libft: 표준 C 라이브러리 함수 재구현</li>
+    </ul>
+    <div class="tags">
+      <span class="tag-g">#C</span><span class="tag-g">#Algorithm</span><span class="tag-g">#Greedy</span><span class="ta
