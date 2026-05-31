@@ -1,0 +1,335 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 960" font-family="'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif" font-size="12">
+  <!-- Background -->
+  <rect width="1150" height="960" fill="#fafafa"/>
+
+  <!-- Title -->
+  <text x="575" y="28" text-anchor="middle" font-size="18" font-weight="bold" fill="#222">Spot Micro 시스템 아키텍처 (최종)</text>
+  <text x="575" y="48" text-anchor="middle" font-size="11" fill="#666">3S LiPo | XT60 Y분기 전원 분리 | 50Hz 외부 + 1kHz 내부 2단 제어 | Vision/SLAM + Classical/RL 확장</text>
+
+  <!-- Legend -->
+  <g transform="translate(870, 62)">
+    <rect x="0" y="0" width="270" height="120" fill="#fff" stroke="#ccc" rx="4"/>
+    <text x="10" y="16" font-weight="bold" font-size="11">범례</text>
+    <line x1="10" y1="30" x2="40" y2="30" stroke="#d32f2f" stroke-width="3.5"/>
+    <text x="45" y="34" font-size="10">전원 + (10~22 AWG)</text>
+    <line x1="10" y1="46" x2="40" y2="46" stroke="#333" stroke-width="3"/>
+    <text x="45" y="50" font-size="10">GND (공통)</text>
+    <line x1="10" y1="62" x2="40" y2="62" stroke="#1565c0" stroke-width="2"/>
+    <text x="45" y="66" font-size="10">UART (제어 통신)</text>
+    <line x1="10" y1="78" x2="40" y2="78" stroke="#6a1b9a" stroke-width="2"/>
+    <text x="45" y="82" font-size="10">I²C (센서 버스)</text>
+    <line x1="10" y1="94" x2="40" y2="94" stroke="#2e7d32" stroke-width="2" stroke-dasharray="5 3"/>
+    <text x="45" y="98" font-size="10">USB / DepthAI (카메라)</text>
+    <line x1="10" y1="110" x2="40" y2="110" stroke="#e65100" stroke-width="2" stroke-dasharray="5 3"/>
+    <text x="45" y="114" font-size="10">LiDAR (UART or USB)</text>
+  </g>
+
+  <!-- ========== SECTION 1: POWER STRIP ========== -->
+  <text x="30" y="80" font-size="11" font-weight="bold" fill="#666">① 전원 분배 (스위치 없음, XT60 탈착으로 ON/OFF)</text>
+
+  <!-- Battery -->
+  <g transform="translate(30, 95)">
+    <rect x="0" y="0" width="95" height="70" fill="#fff3e0" stroke="#e65100" stroke-width="2" rx="4"/>
+    <text x="47" y="18" text-anchor="middle" font-weight="bold" font-size="11" fill="#e65100">3S LiPo</text>
+    <text x="47" y="34" text-anchor="middle" font-size="9">11.1V / 12.6V</text>
+    <text x="47" y="48" text-anchor="middle" font-size="9">Hacker 5000mAh</text>
+    <text x="47" y="62" text-anchor="middle" font-size="9" fill="#666">40~80C</text>
+  </g>
+
+  <!-- XT60 -->
+  <g transform="translate(150, 100)">
+    <rect x="0" y="0" width="70" height="60" fill="#e1f5fe" stroke="#0277bd" stroke-width="2" rx="4"/>
+    <text x="35" y="20" text-anchor="middle" font-weight="bold" font-size="11" fill="#0277bd">XT60</text>
+    <text x="35" y="36" text-anchor="middle" font-size="9">탈착식</text>
+    <text x="35" y="50" text-anchor="middle" font-size="9" fill="#666">= 전원 키</text>
+  </g>
+
+  <!-- 30A Fuse -->
+  <g transform="translate(240, 95)">
+    <rect x="0" y="0" width="100" height="70" fill="#e8f5e9" stroke="#2e7d32" stroke-width="3" rx="4"/>
+    <text x="50" y="18" text-anchor="middle" font-weight="bold" fill="#2e7d32">ATO 퓨즈</text>
+    <rect x="25" y="26" width="50" height="20" fill="#66bb6a" stroke="#2e7d32" rx="2"/>
+    <text x="50" y="40" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">30A</text>
+    <text x="50" y="58" text-anchor="middle" font-size="9">32VDC, 인라인</text>
+  </g>
+
+  <!-- Y-split -->
+  <g transform="translate(360, 92)">
+    <rect x="0" y="0" width="110" height="78" fill="#ffebee" stroke="#c62828" stroke-width="2" rx="4"/>
+    <text x="55" y="18" text-anchor="middle" font-weight="bold" fill="#c62828">XT60 Y분기</text>
+    <text x="55" y="34" text-anchor="middle" font-size="9">물리 분리 포인트</text>
+    <line x1="8" y1="42" x2="102" y2="42" stroke="#c62828" stroke-dasharray="3 2"/>
+    <text x="55" y="56" text-anchor="middle" font-size="9">서보 노이즈</text>
+    <text x="55" y="68" text-anchor="middle" font-size="9">↛ 로직 계통 격리</text>
+  </g>
+
+  <!-- Chain wires -->
+  <line x1="125" y1="130" x2="150" y2="130" stroke="#d32f2f" stroke-width="3"/>
+  <line x1="220" y1="130" x2="240" y2="130" stroke="#d32f2f" stroke-width="3"/>
+  <line x1="340" y1="130" x2="360" y2="130" stroke="#d32f2f" stroke-width="3"/>
+  <text x="180" y="125" text-anchor="middle" font-size="9" fill="#c62828">10AWG</text>
+
+  <!-- Branch A: Servo -->
+  <g transform="translate(500, 85)">
+    <rect x="0" y="0" width="160" height="95" fill="#fffbf0" stroke="#e65100" stroke-width="1" stroke-dasharray="5 3" rx="5"/>
+    <text x="80" y="18" text-anchor="middle" font-weight="bold" font-size="11" fill="#e65100">브랜치 A: 서보 계통</text>
+    <text x="80" y="36" text-anchor="middle" font-size="10">→ PDB (3300µF)</text>
+    <text x="80" y="52" text-anchor="middle" font-size="10">→ 4버스 스타분배</text>
+    <text x="80" y="68" text-anchor="middle" font-size="10">→ STS3215 × 12</text>
+    <text x="80" y="84" text-anchor="middle" font-size="9" fill="#666">피크 ~25A, 14AWG</text>
+  </g>
+
+  <!-- Branch B: Logic -->
+  <g transform="translate(690, 85)">
+    <rect x="0" y="0" width="170" height="95" fill="#f0f7ff" stroke="#1565c0" stroke-width="1" stroke-dasharray="5 3" rx="5"/>
+    <text x="85" y="18" text-anchor="middle" font-weight="bold" font-size="11" fill="#1565c0">브랜치 B: 로직 계통</text>
+    <text x="85" y="36" text-anchor="middle" font-size="10">→ 470µF 입력캡</text>
+    <text x="85" y="50" text-anchor="middle" font-size="10">→ Buck-Boost 5V/4A → Jetson</text>
+    <text x="85" y="64" text-anchor="middle" font-size="10">→ LM2596 5V/1A → STM32 레일</text>
+    <text x="85" y="82" text-anchor="middle" font-size="9" fill="#666">~4A, 18AWG</text>
+  </g>
+
+  <!-- Y-split to branches -->
+  <path d="M 470 130 L 495 110" stroke="#d32f2f" stroke-width="2.5" fill="none"/>
+  <path d="M 470 150 L 695 150" stroke="#d32f2f" stroke-width="2.5" fill="none"/>
+
+  <!-- ========== SECTION DIVIDER ========== -->
+  <line x1="20" y1="200" x2="1130" y2="200" stroke="#ccc" stroke-width="1" stroke-dasharray="4 3"/>
+
+  <!-- ========== SECTION 2: COMPUTE NODES ========== -->
+  <text x="30" y="220" font-size="11" font-weight="bold" fill="#666">② 컴퓨팅 노드 + 센서/통신</text>
+
+  <!-- JETSON BLOCK -->
+  <g transform="translate(30, 240)">
+    <rect x="0" y="0" width="380" height="280" fill="#f3e5f5" stroke="#4527a0" stroke-width="2.5" rx="6"/>
+    <text x="190" y="22" text-anchor="middle" font-weight="bold" font-size="14" fill="#4527a0">Jetson Orin Nano</text>
+    <text x="190" y="38" text-anchor="middle" font-size="10" fill="#666">고수준 연산 (Perception + Planning)</text>
+    <line x1="10" y1="46" x2="370" y2="46" stroke="#4527a0" stroke-dasharray="3 2"/>
+
+    <!-- Layer 1: Perception -->
+    <rect x="15" y="56" width="350" height="50" fill="#fff" stroke="#9575cd" rx="4"/>
+    <text x="190" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#4527a0">Perception Layer — 10~30Hz</text>
+    <text x="25" y="90" font-size="9">• OAK-D-Lite 깊이 맵 (VPU 자체 처리, 30Hz)</text>
+    <text x="25" y="102" font-size="9">• LiDAR SLAM (점군 처리, 10~15Hz)</text>
+
+    <!-- Layer 2: Policy/Gait -->
+    <rect x="15" y="116" width="350" height="64" fill="#fff8e1" stroke="#ff8f00" rx="4"/>
+    <text x="190" y="134" text-anchor="middle" font-size="11" font-weight="bold" fill="#ff8f00">Policy / Gait Layer — 50Hz ⚡</text>
+    <text x="25" y="150" font-size="9">• Classical: Bezier 궤적 + IK (면접 9일 기준)</text>
+    <text x="25" y="162" font-size="9">• RL policy inference (확장, MLP FP16 ~1~2ms)</text>
+    <text x="25" y="174" font-size="9" fill="#666">→ 12관절 목표각 / 발끝 좌표 생성</text>
+
+    <!-- Layer 3: Comm to STM -->
+    <rect x="15" y="190" width="350" height="50" fill="#e3f2fd" stroke="#1565c0" rx="4"/>
+    <text x="190" y="208" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">통신 인터페이스 — 50Hz</text>
+    <text x="25" y="224" font-size="9">• /dev/ttyTHS* UART 460800bps + DMA</text>
+    <text x="25" y="236" font-size="9">• 프레임: COBS + CRC16, 사용률 ~23%</text>
+
+    <!-- Power input -->
+    <text x="15" y="260" font-size="9" fill="#d32f2f">⚡ 5V/3A (USB-C) ← Buck-Boost</text>
+    <text x="15" y="272" font-size="9" fill="#666">↻ 상시 통전 (서보 차단과 독립)</text>
+  </g>
+
+  <!-- JETSON's External Sensors -->
+  <!-- OAK-D-Lite -->
+  <g transform="translate(440, 245)">
+    <rect x="0" y="0" width="130" height="65" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" rx="4"/>
+    <text x="65" y="18" text-anchor="middle" font-weight="bold" font-size="11" fill="#2e7d32">OAK-D-Lite</text>
+    <text x="65" y="34" text-anchor="middle" font-size="9">스테레오 뎁스 카메라</text>
+    <text x="65" y="47" text-anchor="middle" font-size="9">USB-C (DepthAI)</text>
+    <text x="65" y="59" text-anchor="middle" font-size="9" fill="#666">VPU 자체 처리, 30Hz</text>
+  </g>
+  <path d="M 410 275 L 440 275" stroke="#2e7d32" stroke-width="2" stroke-dasharray="5 3"/>
+
+  <!-- LiDAR -->
+  <g transform="translate(440, 325)">
+    <rect x="0" y="0" width="130" height="65" fill="#fff3e0" stroke="#e65100" stroke-width="2" rx="4"/>
+    <text x="65" y="18" text-anchor="middle" font-weight="bold" font-size="11" fill="#e65100">LiDAR</text>
+    <text x="65" y="34" text-anchor="middle" font-size="9">360° 거리 스캔</text>
+    <text x="65" y="47" text-anchor="middle" font-size="9">UART/USB 인터페이스</text>
+    <text x="65" y="59" text-anchor="middle" font-size="9" fill="#666">10~15Hz 스캔</text>
+  </g>
+  <path d="M 410 355 L 440 355" stroke="#e65100" stroke-width="2" stroke-dasharray="5 3"/>
+
+  <!-- STM32 BLOCK -->
+  <g transform="translate(740, 240)">
+    <rect x="0" y="0" width="390" height="280" fill="#fff8e1" stroke="#ff6f00" stroke-width="2.5" rx="6"/>
+    <text x="195" y="22" text-anchor="middle" font-weight="bold" font-size="14" fill="#ff6f00">STM32F446RE (Nucleo-64)</text>
+    <text x="195" y="38" text-anchor="middle" font-size="10" fill="#666">실시간 제어 허브 (FreeRTOS)</text>
+    <line x1="10" y1="46" x2="380" y2="46" stroke="#ff6f00" stroke-dasharray="3 2"/>
+
+    <!-- Comm interface -->
+    <rect x="15" y="56" width="360" height="44" fill="#e3f2fd" stroke="#1565c0" rx="4"/>
+    <text x="195" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">통신 인터페이스 — 50Hz</text>
+    <text x="25" y="90" font-size="9">USART2 DMA ↔ Jetson 460800bps, 수신 idle-line IRQ</text>
+
+    <!-- IMU reading -->
+    <rect x="15" y="108" width="360" height="50" fill="#fce4ec" stroke="#ad1457" rx="4"/>
+    <text x="195" y="126" text-anchor="middle" font-size="11" font-weight="bold" fill="#ad1457">IMU 자세 추정 — 400Hz (polling)</text>
+    <text x="25" y="142" font-size="9">• BNO055 I²C 400kHz → 쿼터니언 roll/pitch/yaw</text>
+    <text x="25" y="154" font-size="9">• 내장 센서융합 (MCU 부하 오프로드)</text>
+
+    <!-- Joint PID -->
+    <rect x="15" y="166" width="360" height="60" fill="#e0f7fa" stroke="#00838f" rx="4"/>
+    <text x="195" y="184" text-anchor="middle" font-size="11" font-weight="bold" fill="#00838f">Joint Control Loop — 1kHz ⚡</text>
+    <text x="25" y="200" font-size="9">• PID + anti-windup, 목표각 추종</text>
+    <text x="25" y="212" font-size="9">• IMU 피드백으로 자세 안정화 오버레이</text>
+    <text x="25" y="222" font-size="8" fill="#666">• 이 루프는 STM32 내부 완결, Jetson 개입 없음</text>
+
+    <!-- Servo bus driver -->
+    <rect x="15" y="232" width="360" height="40" fill="#e8f5e9" stroke="#558b2f" rx="4"/>
+    <text x="195" y="248" text-anchor="middle" font-size="11" font-weight="bold" fill="#558b2f">서보 버스 드라이버 — 4× UART @ 1Mbps</text>
+    <text x="25" y="263" font-size="9">USART1/3/6 + UART4 → 74HC126 버퍼 → 각 다리</text>
+  </g>
+
+  <!-- BNO055 -->
+  <g transform="translate(600, 455)">
+    <rect x="0" y="0" width="120" height="55" fill="#fce4ec" stroke="#ad1457" stroke-width="2" rx="4"/>
+    <text x="60" y="18" text-anchor="middle" font-weight="bold" font-size="11" fill="#ad1457">BNO055 IMU</text>
+    <text x="60" y="32" text-anchor="middle" font-size="9">9축 + 센서융합</text>
+    <text x="60" y="46" text-anchor="middle" font-size="9" fill="#666">I²C 400kHz</text>
+  </g>
+  <line x1="720" y1="482" x2="740" y2="482" stroke="#6a1b9a" stroke-width="2"/>
+
+  <!-- UART bridge between Jetson & STM32 -->
+  <g transform="translate(420, 405)">
+    <rect x="0" y="0" width="300" height="38" fill="#fff" stroke="#1565c0" stroke-width="2.5" rx="6"/>
+    <text x="150" y="16" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">Jetson ↔ STM32 UART Link</text>
+    <text x="150" y="30" text-anchor="middle" font-size="9">460800 bps · 50Hz · COBS+CRC16 · 사용률 ~23%</text>
+  </g>
+  <line x1="410" y1="424" x2="420" y2="424" stroke="#1565c0" stroke-width="2"/>
+  <line x1="720" y1="424" x2="740" y2="424" stroke="#1565c0" stroke-width="2"/>
+  <polygon points="414,420 420,424 414,428" fill="#1565c0"/>
+  <polygon points="726,420 720,424 726,428" fill="#1565c0"/>
+
+  <!-- Power lines to compute blocks -->
+  <path d="M 775 170 L 775 185 L 220 185 L 220 240" fill="none" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <text x="225" y="235" font-size="8" fill="#c62828">5V</text>
+  <path d="M 775 170 L 775 240" fill="none" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <text x="780" y="215" font-size="8" fill="#c62828">5V</text>
+
+  <!-- ========== SECTION 3: SERVO SYSTEM ========== -->
+  <line x1="20" y1="545" x2="1130" y2="545" stroke="#ccc" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="30" y="565" font-size="11" font-weight="bold" fill="#666">③ 서보 계통 (PDB → 4 UART 버스 → 12 servos)</text>
+
+  <!-- PDB -->
+  <g transform="translate(30, 585)">
+    <rect x="0" y="0" width="140" height="100" fill="#ede7f6" stroke="#4527a0" stroke-width="2" rx="4"/>
+    <text x="70" y="20" text-anchor="middle" font-weight="bold" fill="#4527a0">PDB</text>
+    <text x="70" y="34" text-anchor="middle" font-size="9">스타 토폴로지</text>
+    <line x1="8" y1="42" x2="132" y2="42" stroke="#4527a0" stroke-dasharray="3 2"/>
+    <text x="70" y="58" text-anchor="middle" font-size="9">3300µF 25V 벌크캡</text>
+    <text x="70" y="72" text-anchor="middle" font-size="9">4 버스 × 14AWG</text>
+    <text x="70" y="90" text-anchor="middle" font-size="8" fill="#c62828">전원만 공급</text>
+  </g>
+  <path d="M 580 160 L 580 585 L 170 585" fill="none" stroke="#d32f2f" stroke-width="2" stroke-dasharray="4 2"/>
+
+  <!-- 74HC126 -->
+  <g transform="translate(220, 595)">
+    <rect x="0" y="0" width="140" height="80" fill="#e1f5fe" stroke="#0277bd" stroke-width="2" rx="4"/>
+    <text x="70" y="18" text-anchor="middle" font-weight="bold" font-size="11" fill="#0277bd">74HC126</text>
+    <text x="70" y="34" text-anchor="middle" font-size="9">Tri-state 버퍼</text>
+    <line x1="10" y1="42" x2="130" y2="42" stroke="#0277bd" stroke-dasharray="2 2"/>
+    <text x="70" y="56" text-anchor="middle" font-size="9">반이중 UART</text>
+    <text x="70" y="70" text-anchor="middle" font-size="9">OE 핀으로 TX/RX</text>
+  </g>
+  <!-- STM to 74HC126 signal -->
+  <path d="M 920 510 L 920 530 L 290 530 L 290 595" fill="none" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <text x="600" y="525" font-size="9" fill="#1565c0">4× UART TX/RX @ 1Mbps</text>
+
+  <!-- 4 Servo Buses -->
+  <g transform="translate(410, 580)">
+    <rect x="0" y="0" width="710" height="120" fill="#fff" stroke="#558b2f" stroke-width="1.5" rx="5"/>
+    <text x="355" y="18" text-anchor="middle" font-weight="bold" font-size="11" fill="#558b2f">4 Servo Buses (데이지체인, 버스당 3 서보)</text>
+
+    <g transform="translate(20, 32)">
+      <rect x="0" y="0" width="155" height="76" fill="#e8f5e9" stroke="#558b2f" rx="3"/>
+      <text x="77" y="16" text-anchor="middle" font-size="10" font-weight="bold">Bus 1 — FL (앞좌)</text>
+      <text x="77" y="32" text-anchor="middle" font-size="9">STS3215 × 3</text>
+      <text x="77" y="46" text-anchor="middle" font-size="9">hip / thigh / calf</text>
+      <text x="77" y="62" text-anchor="middle" font-size="9" fill="#666">피크 ~5A</text>
+    </g>
+    <g transform="translate(193, 32)">
+      <rect x="0" y="0" width="155" height="76" fill="#e8f5e9" stroke="#558b2f" rx="3"/>
+      <text x="77" y="16" text-anchor="middle" font-size="10" font-weight="bold">Bus 2 — FR (앞우)</text>
+      <text x="77" y="32" text-anchor="middle" font-size="9">STS3215 × 3</text>
+      <text x="77" y="46" text-anchor="middle" font-size="9">hip / thigh / calf</text>
+      <text x="77" y="62" text-anchor="middle" font-size="9" fill="#666">피크 ~5A</text>
+    </g>
+    <g transform="translate(366, 32)">
+      <rect x="0" y="0" width="155" height="76" fill="#e8f5e9" stroke="#558b2f" rx="3"/>
+      <text x="77" y="16" text-anchor="middle" font-size="10" font-weight="bold">Bus 3 — RL (뒤좌)</text>
+      <text x="77" y="32" text-anchor="middle" font-size="9">STS3215 × 3</text>
+      <text x="77" y="46" text-anchor="middle" font-size="9">hip / thigh / calf</text>
+      <text x="77" y="62" text-anchor="middle" font-size="9" fill="#666">피크 ~5A</text>
+    </g>
+    <g transform="translate(539, 32)">
+      <rect x="0" y="0" width="155" height="76" fill="#e8f5e9" stroke="#558b2f" rx="3"/>
+      <text x="77" y="16" text-anchor="middle" font-size="10" font-weight="bold">Bus 4 — RR (뒤우)</text>
+      <text x="77" y="32" text-anchor="middle" font-size="9">STS3215 × 3</text>
+      <text x="77" y="46" text-anchor="middle" font-size="9">hip / thigh / calf</text>
+      <text x="77" y="62" text-anchor="middle" font-size="9" fill="#666">피크 ~5A</text>
+    </g>
+  </g>
+  <!-- 74HC126 to buses -->
+  <line x1="360" y1="635" x2="410" y2="635" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="3 2"/>
+
+  <!-- ========== SECTION 4: CONTROL LOOP HIERARCHY ========== -->
+  <line x1="20" y1="720" x2="1130" y2="720" stroke="#ccc" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="30" y="740" font-size="11" font-weight="bold" fill="#666">④ 제어 루프 계층 (시간 예산 요약)</text>
+
+  <g transform="translate(30, 755)">
+    <rect x="0" y="0" width="1095" height="190" fill="#fff" stroke="#666" rx="4"/>
+
+    <!-- Column headers -->
+    <rect x="0" y="0" width="1095" height="28" fill="#f5f5f5"/>
+    <text x="100" y="18" text-anchor="middle" font-size="11" font-weight="bold">Layer</text>
+    <text x="280" y="18" text-anchor="middle" font-size="11" font-weight="bold">주기 / 예산</text>
+    <text x="480" y="18" text-anchor="middle" font-size="11" font-weight="bold">위치</text>
+    <text x="780" y="18" text-anchor="middle" font-size="11" font-weight="bold">내용</text>
+    <line x1="0" y1="28" x2="1095" y2="28" stroke="#ccc"/>
+    <line x1="200" y1="0" x2="200" y2="190" stroke="#ccc" stroke-dasharray="3 2"/>
+    <line x1="360" y1="0" x2="360" y2="190" stroke="#ccc" stroke-dasharray="3 2"/>
+    <line x1="600" y1="0" x2="600" y2="190" stroke="#ccc" stroke-dasharray="3 2"/>
+
+    <!-- Row 1: Perception -->
+    <rect x="0" y="28" width="1095" height="32" fill="#f3e5f5"/>
+    <text x="100" y="48" text-anchor="middle" font-size="10" font-weight="bold" fill="#4527a0">Perception</text>
+    <text x="280" y="48" text-anchor="middle" font-size="10">10~30Hz · 33~100ms</text>
+    <text x="480" y="48" text-anchor="middle" font-size="10">Jetson</text>
+    <text x="610" y="48" font-size="10">OAK-D 뎁스 맵, LiDAR SLAM, 장애물 인식, goal 설정</text>
+    <line x1="0" y1="60" x2="1095" y2="60" stroke="#ccc"/>
+
+    <!-- Row 2: Policy -->
+    <rect x="0" y="60" width="1095" height="32" fill="#fff8e1"/>
+    <text x="100" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#ff8f00">Policy / Gait</text>
+    <text x="280" y="80" text-anchor="middle" font-size="10" font-weight="bold">50Hz · 20ms</text>
+    <text x="480" y="80" text-anchor="middle" font-size="10">Jetson</text>
+    <text x="610" y="80" font-size="10">Bezier trajectory + IK (classical) or RL policy (확장)</text>
+    <line x1="0" y1="92" x2="1095" y2="92" stroke="#ccc"/>
+
+    <!-- Row 3: UART -->
+    <rect x="0" y="92" width="1095" height="32" fill="#e3f2fd"/>
+    <text x="100" y="112" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">UART Link</text>
+    <text x="280" y="112" text-anchor="middle" font-size="10">50Hz · 20ms</text>
+    <text x="480" y="112" text-anchor="middle" font-size="10">Jetson ↔ STM32</text>
+    <text x="610" y="112" font-size="10">460800bps, 왕복 ~400μs, 215B/cycle, 사용률 ~23%</text>
+    <line x1="0" y1="124" x2="1095" y2="124" stroke="#ccc"/>
+
+    <!-- Row 4: Joint PID -->
+    <rect x="0" y="124" width="1095" height="32" fill="#e0f7fa"/>
+    <text x="100" y="144" text-anchor="middle" font-size="10" font-weight="bold" fill="#00838f">Joint PID</text>
+    <text x="280" y="144" text-anchor="middle" font-size="10" font-weight="bold">1kHz · 1ms</text>
+    <text x="480" y="144" text-anchor="middle" font-size="10">STM32 내부</text>
+    <text x="610" y="144" font-size="10">목표각 추종 PID, IMU 피드백 오버레이 (FreeRTOS)</text>
+    <line x1="0" y1="156" x2="1095" y2="156" stroke="#ccc"/>
+
+    <!-- Row 5: Servo Bus -->
+    <rect x="0" y="156" width="1095" height="32" fill="#e8f5e9"/>
+    <text x="100" y="176" text-anchor="middle" font-size="10" font-weight="bold" fill="#558b2f">Servo Bus</text>
+    <text x="280" y="176" text-anchor="middle" font-size="10">200~500Hz per bus</text>
+    <text x="480" y="176" text-anchor="middle" font-size="10">STM32 ↔ 서보</text>
+    <text x="610" y="176" font-size="10">4 UART × 1Mbps, 반이중 SYNC_WRITE/READ</text>
+  </g>
+
+</svg>

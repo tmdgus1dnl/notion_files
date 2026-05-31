@@ -1,0 +1,9 @@
+﻿이름,담당자,사이트,산출물,상태
+"객체 인식, Jetson orin nano에서 할 것",,,,VISION
+카메라 스펙 (OAK-D-Lite 의사 결정),,,,VISION
+Orin Nano 환경 세팅 + OAK-D Lite 객체 인식 테스트,,,,VISION
+OAK-D Lite 촬영 스크립트 트러블슈팅,,,,VISION
+[Vender] oak_camera_driver 패키지 보고서,,,,VISION
+[Perception] camera_perception 패키지 보고서,,,,Perception
+학습시,,,,
+아침 쟁점,,,,

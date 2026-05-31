@@ -1,0 +1,27 @@
+﻿이름,담당자,사이트,산출물,상태
+시뮬레이터 Gazebo 선정 (변경 있음.),,,,Simulation
+학습시,,,,
+로비 실측 자료,,,,Simulation
+아침 쟁점,,,,
+Orin Nano 환경 세팅 + OAK-D Lite 카메라 테스트,,,,VISION
+[Perception] LiDAR 기능 정의서,,,,Perception
+YOLOv11 Person 탐지 모델 테스트 보고서,,,,VISION
+[Perception] Cyglidar D1 분석,,,,Perception
+파인튜닝 데이터셋 수집 계획표,,,,VISION
+[Perception] LiDAR 환경 모델 설계,,,,Perception
+[Perception] OAK-D-Lite 인풋 활용 프로세스 설계 보고서,,,,Perception
+[Interface] VictimDetection.msg 보고서,,,,VISION
+[Perception] LiDAR 환경 모델 README,,,,Perception
+ToDo,,,,Simulation
+[Perception] launch 정리,,,,Perception
+sim 연동 전까지 ubuntu ros2 연동,,,,Simulation
+ROS2 구조 분석,,,,기타
+[Perception] LiDAR 인지 환경 별 검증 테스트,,,,Perception
+[Perception] LiDAR 기반 환경 모델 문서화,,,,Perception
+[Localization] 좌표 변환 TF 체인 설계,,,,Localization
+[Localization] TF 체인 구현,,,,Localization
+[AN] 구조 설계 초안,,,,Autonomous Navigation
+[AN] Global Path 기반 Autonomous Navigation 설계,,,,Autonomous Navigation
+[AN] Path Progress Tracking&Local Path Planning 구현,,,,Autonomous Navigation
+[AN] navigation_fsm_node & test_fsm_mock,,,,Autonomous Navigation
+"[Perception] LiDAR 기반 기능 고도화 - Obstacle Memorial Grid ",,,,Perception

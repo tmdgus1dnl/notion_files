@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPi 브리지 시스템 — 아키텍처 문서</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, 'Segoe UI', 'Noto Sans KR', sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  line-height: 1.7;
+  font-size: 15px;
+}
+.page { max-width: 960px; margin: 0 auto; padding: 60px 32px 120px; }
+
+h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+h2 { font-size: 20px; font-weight: 600; margin: 56px 0 16px; color: #e6edf3;
+     border-bottom: 1px solid #21262d; padding-bottom: 10px; }
+h3 { font-size: 15px; font-weight: 600; margin: 24px 0 10px; color: #2dd4bf; text-transform: uppercase; letter-spacing: 0.5px; }
+p { color: #8b949e; margin-bottom: 14px; }
+code { font-family: 'Cascadia Code', 'Fira Code', monospace;
+       background: #1c2128; border: 1px solid #30363d;
+       border-radius: 4px; padding: 1px 7px; font-size: 13px; color: #e6edf3; }
+pre { background: #161b22; border: 1px solid #30363d; border-radius: 10px;
+      padding: 20px 24px; overflow-x: auto; font-size: 13px;
+      line-height: 1.7; margin: 14px 0; font-family: 'Cascadia Code', 'Fira Code', monospace; }
+pre .comment { color: #6e7681; }
+pre .kw { color: #ff7b72; }
+pre .str { color: #a5d6ff; }
+pre .type { color: #ffa657; }
+pre .fn { color: #d2a8ff; }
+pre .num { color: #79c0ff; }
+
+.tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-right: 6px; }
+.tag-teal  { background: #042f2e; color: #2dd4bf; border: 1px solid #134e4a; }
+.tag-amber { background: #2d1d0a; color: #fbbf24; border: 1px solid #78350f; }
+.tag-blue  { background: #0a1628; color: #60a5fa; border: 1px solid #1e4070; }
+.tag-purple{ background: #1a1028; color: #a5b4fc; border: 1px solid #312e81; }
+.tag-coral { background: #2d1409; color: #f97316; border: 1px solid #7c2d12; }
+
+.card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px 24px; margin: 16px 0; }
+.card-teal  { border-left: 3px solid #2dd4bf; }
+.card-amber { border-left: 3px solid #fbbf24; }
+.card-blue  { border-left: 3px solid #60a5fa; }
+.card-coral { border-left: 3px solid #f97316; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 14px 0; }
+th { background: #1c2128; color: #e6edf3; padding: 10px 16px; text-align: left; font-weight: 500; border-bottom: 1px solid #30363d; }
+td { padding: 10px 16px; color: #8b949e; border-bottom: 1px solid #21262d; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+td:first-child { color: #e6edf3; font-family: 'Cascadia Code', monospace; font-size: 13px; }
+
+.stars { color: #fbbf24; }
+.diagram-wrap { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 28px; margin: 20px 0; overflow-x: auto; }
+.diagram-wrap p { font-size: 12px; text-align: center; margin-top: 12px; margin-bottom: 0; color: #6e7681; }
+
+.roadmap { margin: 20px 0; }
+.rm-item { display: flex; gap: 20px; padding: 20px 0; border-bottom: 1px solid #21262d; }
+.rm-item:last-child { border-bottom: none; }
+.rm-num { width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%;
+          background: #042f2e; border: 1px solid #2dd4bf44;
+          color: #2dd4bf; font-size: 14px; font-weight: 600;
+          display: flex; align-items: center; justify-content: center; }
+.rm-body h4 { font-size: 15px; font-weight: 600; color: #e6edf3; margin-bottom: 4px; }
+.rm-body p { font-size: 13px; margin-bottom: 6px; }
+.rm-body code { font-size: 12px; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.info-block { background: #0d2040; border: 1px solid #1e4070; border-radius: 10px; padding: 16px 20px; }
+.info-block h4 { font-size: 13px; font-weight: 600; color: #60a5fa; margin-bottom: 8px; letter-spacing: 0.4px; text-transform: uppercase; }
+.info-block p { font-size: 13px; color: #8b949e; margin: 0; }
+.info-block.amber { background: #1a1205; border-color: #78350f; }
+.info-block.amber h4 { color: #fbbf24; }
+.info-block.teal { background: #042520; border-color: #134e4a; }
+.info-block.teal h4 { color: #2dd4bf; }
+.info-block.purple { background: #120d1e; border-color: #312e81; }
+.info-block.purple h4 { color: #a5b4fc; }
+
+.divider { border: none; border-top: 1px solid #21262d; margin: 40px 0; }
+
+svg text { font-family: -apple-system, 'Segoe UI', 'Noto Sans KR', sans-serif; }
+
+.footnote { font-size: 12px; color: #6e7681; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ─── HEADER ────────────────────────────────────────────────── -->
+<div style="margin-bottom: 48px;">
+  <div style="margin-bottom: 16px;">
+    <span class="tag tag-teal">임베디드</span>
+    <span class="tag tag-amber">ROS2</span>
+    <span class="tag tag-blue">무선 통신</span>
+    <span class="tag tag-purple">Qt</span>
+  </div>
+  <h1>RPi 브리지 시스템</h1>
+  <p style="font-size: 17px; color: #c9d1d9; margin: 8px 0 4px;">
+    Jetson ↔ Raspberry Pi ↔ PC 무선 통신 아키텍처
+  </p>
+  <p style="font-size: 13px; color: #6e7681;">
+    4족 보행 로봇 관제 시스템 · BridgeDaemon + Qt 앱 + 공유 메모리 (IPC)
+  </p>
+</div>
+
+
+<!-- ─── 1. 시스템 개요 ─────────────────────────────────────────── -->
+<h2>1. 시스템 개요</h2>
+
+<p>Jetson(로봇 탑재 컴퓨터)이 생성하는 라이다·카메라·odom 데이터를 Raspberry Pi(중계 브리지)가
+UDP로 수신한다. RPi 내부에서는 공유 메모리(IPC)를 통해 Qt 관제앱에 전달하고,
+Qt에서 입력한 커맨드는 역방향으로 Jetson에 전송된다.</p>
+
+<div class="two-col" style="margin-top: 20px;">
+  <div class="info-block teal">
+    <h4>핵심 설계 원칙</h4>
+    <p>무선 환경 특성상 EtherCAT급 결정론은 불가능하다.
+       대신 데이터 특성에 맞는 프로토콜 분리(UDP/TCP)와
+       공유 메모리 기반 IPC로 지연 최소화를 달성한다.</p>
+  </div>
+  <div class="info-block amber">
+    <h4>병목 데이터</h4>
+    <p>라이다(~5 MB/s) · 이미지 raw(~45 MB/s → 압축 필수).
+       odom은 200 B × 50 Hz로 무시 가능.
+       Wi-Fi 5 실질 처리량 ~40 MB/s 이내로 트래픽 설계 필요.</p>
+  </div>
+</div>
+
+
+<!-- ─── 2. 전체 아키텍처 ───────────────────────────────────────── -->
+<h2>2. 전체 아키텍처</h2>
+
+<div class="diagram-wrap">
+<svg width="100%" viewBox="0 0 860 340">
+<defs>
+  <marker id="a0" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="a-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="a-coral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="a-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="a-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#2dd4bf" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="a-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- Jetson -->
+<rect x="10" y="30" width="150" height="280" rx="12" fill="#0a1628" stroke="#1e4070" stroke-width="1"/>
+<text x="85" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#60a5fa">Jetson</text>
+<text x="85" y="74" text-anchor="middle" font-size="11" fill="#4a7cbf">4족 보행 로봇</text>
+<rect x="24" y="92" width="122" height="28" rx="6" fill="#0d2040" stroke="#1e4070" stroke-width="0.5"/>
+<text x="85" y="110" text-anchor="middle" font-size="11" fill="#93c5fd">Camera / LiDAR</text>
+<rect x="24" y="128" width="122" height="28" rx="6" fill="#0d2040" stroke="#1e4070" stroke-width="0.5"/>
+<text x="85" y="146" text-anchor="middle" font-size="11" fill="#93c5fd">Odometry</text>
+<rect x="24" y="164" width="122" height="28" rx="6" fill="#0d2040" stroke="#1e4070" stroke-width="0.5"/>
+<text x="85" y="182" text-anchor="middle" font-size="11" fill="#93c5fd">Map Data</text>
+<rect x="24" y="256" width="122" height="28" rx="6" fill="#0d2040" stroke="#1e4070" stroke-width="0.5"/>
+<text x="85" y="274" text-anchor="middle" font-size="11" fill="#93c5fd">UDP Tx / Rx</text>
+
+<!-- RPi outer -->
+<rect x="200" y="10" width="460" height="320" rx="14" fill="#051a14" stroke="#0f3d35" stroke-width="1.5"/>
+<text x="430" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="#2dd4bf">Raspberry Pi (Bridge)</text>
+
+<!-- BridgeDaemon -->
+<rect x="216" y="52" width="200" height="248" rx="10" fill="#03110e" stroke="#0d3028" stroke-width="1"/>
+<text x="316" y="74" text-anchor="middle" font-size="12" font-weight="600" fill="#2dd4bf">BridgeDaemon</text>
+<text x="316" y="88" text-anchor="middle" font-size="10" fill="#0f6e56">1 process / 6 threads</text>
+<rect x="228" y="100" width="176" height="22" rx="5" fill="#0a2520" stroke="#134e4a" stroke-width="0.5"/>
+<text x="316" y="115" text-anchor="middle" font-size="11" fill="#5eead4">jetson_rx  ★★★★</text>
+<rect x="228" y="128" width="176" height="22" rx="5" fill="#1a0e04" stroke="#7c2d12" stroke-width="0.5"/>
+<text x="316" y="143" text-anchor="middle" font-size="11" fill="#fb923c">jetson_tx  ★★★★★</text>
+<rect x="228" y="156" width="176" height="22" rx="5" fill="#0a2520" stroke="#134e4a" stroke-width="0.5"/>
+<text x="316" y="171" text-anchor="middle" font-size="11" fill="#5eead4">reassembly_shm  ★★★</text>
+<rect x="228" y="184" width="176" height="22" rx="5" fill="#1a0e04" stroke="#7c2d12" stroke-width="0.5"/>
+<text x="316" y="199" text-anchor="middle" font-size="11" fill="#fb923c">protocol_timer  ★★★★★</text>
+<rect x="228" y="212" width="176" height="22" rx="5" fill="#0a2520" stroke="#134e4a" stroke-width="0.5"/>
+<text x="316" y="227" text-anchor="middle" font-size="11" fill="#5eead4">pc_link  ★★★</text>
+<rect x="228" y="240" width="176" height="22" rx="5" fill="#161616" stroke="#30363d" stroke-width="0.5"/>
+<text x="316" y="255" text-anchor="middle" font-size="11" fill="#6e7681">main/watchdog  ★★</text>
+
+<!-- SHM -->
+<rect x="444" y="52" width="200" height="120" rx="10" fill="#18140a" stroke="#78350f" stroke-width="1"/>
+<text x="544" y="74" text-anchor="middle" font-size="12" font-weight="600" fill="#fbbf24">Shared Memory (IPC)</text>
+<rect x="456" y="86" width="80" height="24" rx="5" fill="#2d1d0a" stroke="#92400e" stroke-width="0.5"/>
+<text x="496" y="102" text-anchor="middle" font-size="11" fill="#fcd34d">SHM-IMG</text>
+<rect x="548" y="86" width="80" height="24" rx="5" fill="#2d1d0a" stroke="#92400e" stroke-width="0.5"/>
+<text x="588" y="102" text-anchor="middle" font-size="11" fill="#fcd34d">SHM-MAP</text>
+<rect x="456" y="118" width="80" height="24" rx="5" fill="#2d1d0a" stroke="#92400e" stroke-width="0.5"/>
+<text x="496" y="134" text-anchor="middle" font-size="11" fill="#fcd34d">SHM-META</text>
+<rect x="548" y="118" width="80" height="24" rx="5" fill="#2d1d0a" stroke="#92400e" stroke-width="0.5"/>
+<text x="588" y="134" text-anchor="middle" font-size="11" fill="#fcd34d">eventfd</text>
+
+<!-- Qt App -->
+<rect x="444" y="196" width="200" height="134" rx="10" fill="#0f0e1a" stroke="#312e81" stroke-width="1"/>
+<text x="544" y="218" text-anchor="middle" font-size="12" font-weight="600" fill="#a5b4fc">Qt App</text>
+<rect x="456" y="228" width="176" height="22" rx="5" fill="#1a1a2e" stroke="#312e81" stroke-width="0.5"/>
+<text x="544" y="243" text-anchor="middle" font-size="11" fill="#c7d2fe">UI Main Thread  ★★★</text>
+<rect x="456" y="256" width="84" height="22" rx="5" fill="#1a1a2e" stroke="#312e81" stroke-width="0.5"/>
+<text x="498" y="271" text-anchor="middle" font-size="11" fill="#c7d2fe">data_consumer</text>
+<rect x="548" y="256" width="84" height="22" rx="5" fill="#1a1a2e" stroke="#312e81" stroke-width="0.5"/>
+<text x="590" y="271" text-anchor="middle" font-size="11" fill="#c7d2fe">cmd_ipc</text>
+<rect x="456" y="284" width="176" height="22" rx="5" fill="#0d0d18" stroke="#1e1b4b" stroke-width="0.5"/>
+<text x="544" y="299" text-anchor="middle" font-size="10" fill="#818cf8">Unix Domain Socket ↔ jetson_tx</text>
+
+<!-- PC Server -->
+<rect x="700" y="30" width="150" height="280" rx="12" fill="#18140a" stroke="#78350f" stroke-width="1"/>
+<text x="775" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#fbbf24">PC Server</text>
+<text x="775" y="74" text-anchor="middle" font-size="11" fill="#92400e">시뮬 / 관제</text>
+<rect x="714" y="92" width="122" height="28" rx="6" fill="#2d1d0a" stroke="#78350f" stroke-width="0.5"/>
+<text x="775" y="110" text-anchor="middle" font-size="11" fill="#fcd34d">Command Server</text>
+<rect x="714" y="128" width="122" height="28" rx="6" fill="#2d1d0a" stroke="#78350f" stroke-width="0.5"/>
+<text x="775" y="146" text-anchor="middle" font-size="11" fill="#fcd34d">Visualization</text>
+
+<!-- ARROWS -->
+<!-- Jetson → BridgeDaemon (data) -->
+<line x1="160" y1="140" x2="210" y2="140" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#a-blue)"/>
+<text x="170" y="132" font-size="10" fill="#60a5fa">UDP</text>
+<!-- BridgeDaemon → Jetson (cmd) -->
+<line x1="210" y1="220" x2="160" y2="220" stroke="#f97316" stroke-width="1.5" marker-end="url(#a-coral)"/>
+<text x="162" y="212" font-size="10" fill="#f97316">CMD</text>
+
+<!-- BridgeDaemon → SHM (write) -->
+<line x1="416" y1="130" x2="440" y2="110" stroke="#2dd4bf" stroke-width="1.2" marker-end="url(#a-teal)"/>
+
+<!-- SHM → Qt (eventfd) -->
+<line x1="544" y1="172" x2="544" y2="192" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4 2" marker-end="url(#a-amber)"/>
+<text x="556" y="184" font-size="10" fill="#fbbf24">notify</text>
+
+<!-- Qt → PC -->
+<line x1="648" y1="250" x2="696" y2="220" stroke="#a5b4fc" stroke-width="1.2" marker-end="url(#a-purple)"/>
+<text x="670" y="242" text-anchor="middle" font-size="10" fill="#a5b4fc">UDP/TCP</text>
+
+<!-- PC → BridgeDaemon -->
+<line x1="696" y1="180" x2="648" y2="180" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#a-amber)"/>
+<text x="674" y="172" text-anchor="middle" font-size="10" fill="#fbbf24">data</text>
+</svg>
+<p>전체 시스템 구성: Jetson ↔ RPi 무선 UDP · RPi 내부 공유 메모리 IPC · RPi ↔ PC 유선/무선 소켓</p>
+</div>
+
+
+<!-- ─── 3. BridgeDaemon 내부 데이터 흐름 ──────────────────────── -->
+<h2>3. BridgeDaemon 내부 데이터 흐름</h2>
+<p>BridgeDaemon은 RPi에서 단일 프로세스로 동작하며, 역할별로 분리된 6개 스레드로 구성된다.
+스레드 간 데이터는 큐(Queue)를 통해 전달되어 블로킹이 전파되지 않는다.</p>
+
+<div class="diagram-wrap">
+<svg width="100%" viewBox="0 0 860 360">
+<defs>
+  <marker id="b0" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#6e7681" stroke-width="1.5" stroke-linecap="round"/>
+  </marker>
+  <marker id="b-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#2dd4bf" stroke-width="1.5" stroke-linecap="round"/>
+  </marker>
+  <marker id="b-coral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round"/>
+  </marker>
+  <marker id="b-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/>
+  </marker>
+</defs>
+
+<!-- INPUT: Jetson UDP -->
+<rect x="10" y="140" width="110" height="36" rx="8" fill="#0a1628" stroke="#1e4070" stroke-width="1"/>
+<text x="65" y="162" text-anchor="middle" font-size="12" fill="#60a5fa">Jetson UDP 패킷</text>
+
+<!-- INPUT: PC -->
+<rect x="10" y="244" width="110" height="36" rx="8" fill="#18140a" stroke="#78350f" stroke-width="1"/>
+<text x="65" y="266" text-anchor="middle" font-size="12" fill="#fbbf24">PC 패킷</text>
+
+<!-- jetson_rx -->
+<rect x="160" y="132" width="130" height="52" rx="8" fill="#03110e" stroke="#134e4a" stroke-width="1"/>
+<text x="225" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#2dd4bf">jetson_rx</text>
+<text x="225" y="168" text-anchor="middle" font-size="10" fill="#0f6e56">수신 · 분류</text>
+
+<!-- fragment_queue -->
+<rect x="336" y="70" width="130" height="36" rx="18" fill="#042520" stroke="#0f6e56" stroke-width="1"/>
+<text x="401" y="92" text-anchor="middle" font-size="11" fill="#5eead4">fragment_queue</text>
+
+<!-- reassembly_shm -->
+<rect x="516" y="60" width="140" height="52" rx="8" fill="#03110e" stroke="#134e4a" stroke-width="1"/>
+<text x="586" y="80" text-anchor="middle" font-size="12" font-weight="600" fill="#2dd4bf">reassembly_shm</text>
+<text x="586" y="96" text-anchor="middle" font-size="10" fill="#0f6e56">재조립 → SHM write</text>
+
+<!-- SHM OUTPUT -->
+<rect x="710" y="60" width="130" height="52" rx="8" fill="#18140a" stroke="#78350f" stroke-width="1"/>
+<text x="775" y="80" text-anchor="middle" font-size="12" font-weight="600" fill="#fbbf24">SHM-IMG / MAP</text>
+<text x="775" y="96" text-anchor="middle" font-size="10" fill="#92400e">SHM-META</text>
+
+<!-- Telemetry direct to SHM -->
+<text x="401" y="155" text-anchor="middle" font-size="10" fill="#6e7681">텔레메트리 직접</text>
+
+<!-- protocol_timer -->
+<rect x="336" y="176" width="130" height="52" rx="8" fill="#1a0e04" stroke="#7c2d12" stroke-width="1"/>
+<text x="401" y="196" text-anchor="middle" font-size="12" font-weight="600" fill="#fb923c">protocol_timer</text>
+<text x="401" y="212" text-anchor="middle" font-size="10" fill="#92400e">ACK · retry · heartbeat</text>
+
+<!-- retry_queue -->
+<rect x="516" y="176" width="130" height="36" rx="18" fill="#1a0e04" stroke="#92400e" stroke-width="1"/>
+<text x="581" y="198" text-anchor="middle" font-size="11" fill="#fb923c">retry_queue</text>
+
+<!-- control_queue -->
+<rect x="336" y="272" width="130" height="36" rx="18" fill="#1a0e04" stroke="#92400e" stroke-width="1"/>
+<text x="401" y="294" text-anchor="middle" font-size="11" fill="#fb923c">control_queue</text>
+
+<!-- jetson_tx -->
+<rect x="516" y="252" width="130" height="52" rx="8" fill="#1a0e04" stroke="#7c2d12" stroke-width="1"/>
+<text x="581" y="272" text-anchor="middle" font-size="12" font-weight="600" fill="#fb923c">jetson_tx</text>
+<text x="581" y="288" text-anchor="middle" font-size="10" fill="#92400e">커맨드 · ACK 송신</text>
+
+<!-- pc_link -->
+<rect x="160" y="236" width="130" height="52" rx="8" fill="#03110e" stroke="#134e4a" stroke-width="1"/>
+<text x="225" y="256" text-anchor="middle" font-size="12" font-weight="600" fill="#2dd4bf">pc_link</text>
+<text x="225" y="272" text-anchor="middle" font-size="10" fill="#0f6e56">PC 송수신</text>
+
+<!-- OUTPUT: Jetson -->
+<rect x="700" y="252" width="140" height="36" rx="8" fill="#0a1628" stroke="#1e4070" stroke-width="1"/>
+<text x="770" y="274" text-anchor="middle" font-size="12" fill="#60a5fa">Jetson으로 송신</text>
+
+<!-- ARROWS -->
+<line x1="120" y1="158" x2="156" y2="158" stroke="#60a5fa" stroke-width="1.3" marker-end="url(#b-teal)"/>
+<line x1="290" y1="145" x2="332" y2="100" stroke="#2dd4bf" stroke-width="1.2" marker-end="url(#b-teal)"/>
+<text x="302" y="122" font-size="10" fill="#2dd4bf">fragment</text>
+<line x1="290" y1="162" x2="706" y2="96" stroke="#6e7681" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#b0)"/>
+<line x1="290" y1="175" x2="332" y2="190" stroke="#2dd4bf" stroke-width="1.2" marker-end="url(#b-teal)"/>
+<text x="296" y="196" font-size="10" fill="#2dd4bf">ACK 수신</text>
+<line x1="466" y1="88" x2="512" y2="85" stroke="#2dd4bf" stroke-width="1.2" marker-end="url(#b-teal)"/>
+<line x1="656" y1="86" x2="706" y2="86" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#b-amber)"/>
+<line x1="466" y1="202" x2="512" y2="202" stroke="#f97316" stroke-width="1.2" marker-end="url(#b-coral)"/>
+<line x1="401" y1="228" x2="401" y2="268" stroke="#f97316" stroke-width="1.2" marker-end="url(#b-coral)"/>
+<text x="408" y="250" font-size="10" fill="#f97316">재전송 요청</text>
+<line x1="120" y1="262" x2="156" y2="262" stroke="#fbbf24" stroke-width="1.3" marker-end="url(#b-teal)"/>
+<line x1="290" y1="278" x2="332" y2="290" stroke="#2dd4bf" stroke-width="1.2" marker-end="url(#b-coral)"/>
+<text x="290" y="290" font-size="10" fill="#f97316">커맨드</text>
+<line x1="466" y1="290" x2="512" y2="278" stroke="#f97316" stroke-width="1.2" marker-end="url(#b-coral)"/>
+<line x1="646" y1="278" x2="696" y2="274" stroke="#f97316" stroke-width="1.2" marker-end="url(#b-coral)"/>
+<line x1="646" y1="265" x2="646" y2="202" x2="648" y2="202" fill="none" stroke="#f97316" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="660" y="240" font-size="10" fill="#f97316">retry</text>
+</svg>
+<p>BridgeDaemon 내부 스레드 간 데이터 흐름 · 큐 기반 비동기 처리</p>
+</div>
+
+
+<!-- ─── 4. 공유 메모리 설계 ────────────────────────────────────── -->
+<h2>4. 공유 메모리 (IPC) 설계</h2>
+
+<h3>4-1. SharedData 구조</h3>
+<p>모든 앱이 단일 헤더 파일 <code>shm_def.h</code> 을 공유한다.
+포인터 저장은 금지 — 프로세스마다 attach 주소가 달라서 역참조 시 세그폴트가 발생한다.</p>
+
+<pre><span class="comment">// shm_def.h — 모든 앱이 이 헤더 하나만 include</span>
+<span class="kw">#pragma once</span>
+<span class="kw">#include</span> <span class="str">&lt;stdint.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;pthread.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;stdatomic.h&gt;</span>
+
+<span class="kw">#define</span> SHM_NAME      <span class="str">"/robot_bridge"</span>
+<span class="kw">#define</span> MAX_IMG_BYTES (<span class="num">640</span>*<span class="num">480</span>*<span class="num">2</span>)   <span class="comment">// JPEG 압축 기준</span>
+<span class="kw">#define</span> MAX_LIDAR_PTS  <span class="num">1024</span>          <span class="comment">// 2D: 360 / 3D: decimation 후</span>
+<span class="kw">#define</span> TRIPLE_SLOTS   <span class="num">3</span>
+
+<span class="type">typedef</span> <span class="kw">struct</span> {
+    <span class="type">uint8_t</span>  state;            <span class="comment">// 슬롯 상태: EMPTY/WRITING/READY/READING</span>
+    <span class="type">uint32_t</span> size;             <span class="comment">// 실제 데이터 바이트 수</span>
+    <span class="type">uint64_t</span> timestamp_us;    <span class="comment">// 송신 측 타임스탬프</span>
+    <span class="type">uint8_t</span>  data[MAX_IMG_BYTES];
+} ImgSlot;
+
+<span class="type">typedef</span> <span class="kw">struct</span> {
+    <span class="comment">// ── 이미지: Triple Buffer ──────────────────────────</span>
+    ImgSlot           img_slots[TRIPLE_SLOTS];
+    <span class="type">_Atomic</span> <span class="type">int</span>       img_ready_idx;   <span class="comment">// 최신 슬롯 인덱스</span>
+
+    <span class="comment">// ── 라이다: Double Buffer ─────────────────────────</span>
+    <span class="type">float</span>             lidar[<span class="num">2</span>][MAX_LIDAR_PTS][<span class="num">2</span>]; <span class="comment">// [slot][point][x,y]</span>
+    <span class="type">uint32_t</span>          lidar_count[<span class="num">2</span>];
+    <span class="type">_Atomic</span> <span class="type">int</span>       lidar_ready_idx;
+
+    <span class="comment">// ── Odom: rwlock + 직접 쓰기 ─────────────────────</span>
+    pthread_rwlock_t  odom_lock;
+    <span class="type">float</span>             odom[<span class="num">3</span>];            <span class="comment">// x, y, theta</span>
+    <span class="type">uint64_t</span>          odom_ts_us;
+
+    <span class="comment">// ── 메타: 연결 상태 / 통계 ───────────────────────</span>
+    pthread_rwlock_t  meta_lock;
+    <span class="type">uint8_t</span>           jetson_connected;
+    <span class="type">uint32_t</span>          pkt_drop_count;
+    <span class="type">float</span>             avg_latency_us;
+
+} SharedData;</pre>
+
+<div class="two-col">
+  <div class="info-block teal">
+    <h4>Triple Buffer 적용 대상</h4>
+    <p>이미지·라이다처럼 크고 자주 덮어쓰는 데이터.
+       Writer와 Reader가 서로 다른 슬롯을 사용하므로 lock 없이 atomic index swap만으로 동기화 가능.</p>
+  </div>
+  <div class="info-block amber">
+    <h4>rwlock 적용 대상</h4>
+    <p>odom·메타처럼 작고 단순한 데이터.
+       여러 Reader가 동시 읽기 가능, Writer는 배타적 점유. 크기가 작아 memcpy 오버헤드 무시 가능.</p>
+  </div>
+</div>
+
+
+<h3>4-2. Triple Buffer 슬롯 상태 전이</h3>
+
+<div class="diagram-wrap">
+<svg width="100%" viewBox="0 0 680 200">
+<defs>
+  <marker id="c0" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#6e7681" stroke-width="1.5" stroke-linecap="round"/>
+  </marker>
+  <marker id="c-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#2dd4bf" stroke-width="1.5" stroke-linecap="round"/>
+  </marker>
+</defs>
+
+<!-- EMPTY -->
+<rect x="40" y="72" width="120" height="56" rx="10" fill="#1c2128" stroke="#30363d" stroke-width="1"/>
+<text x="100" y="97" text-anchor="middle" font-size="13" font-weight="600" fill="#8b949e">EMPTY</text>
+<text x="100" y="115" text-anchor="middle" font-size="10" fill="#6e7681">슬롯 비어있음</text>
+
+<!-- WRITING -->
+<rect x="200" y="72" width="120" height="56" rx="10" fill="#042520" stroke="#2dd4bf" stroke-width="1"/>
+<text x="260" y="97" text-anchor="middle" font-size="13" font-weight="600" fill="#2dd4bf">WRITING</text>
+<text x="260" y="115" text-anchor="middle" font-size="10" fill="#5eead4">reassembly_shm 점유</text>
+
+<!-- READY -->
+<rect x="360" y="72" width="120" height="56" rx="10" fill="#2d1d0a" stroke="#fbbf24" stroke-width="1"/>
+<text x="420" y="97" text-anchor="middle" font-size="13" font-weight="600" fill="#fbbf24">READY</text>
+<text x="420" y="115" text-anchor="middle" font-size="10" fill="#fcd34d">atomic swap 완료</text>
+
+<!-- READING -->
+<rect x="520" y="72" width="120" height="56" rx="10" fill="#120d1e" stroke="#a5b4fc" stroke-width="1"/>
+<text x="580" y="97" text-anchor="middle" font-size="13" font-weight="600" fill="#a5b4fc">READING</text>
+<text x="580" y="115" text-anchor="middle" font-size="10" fill="#c7d2fe">data_consumer 점유</text>
+
+<!-- Arrows -->
+<line x1="160" y1="100" x2="196" y2="100" stroke="#2dd4bf" stroke-width="1.5" marker-end="url(#c-teal)"/>
+<text x="178" y="92" text-anchor="middle" font-size="10" fill="#2dd4bf">선택</text>
+<line x1="320" y1="100" x2="356" y2="100" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#c-teal)"/>
+<text x="338" y="92" text-anchor="middle" font-size="10" fill="#fbbf24">write 완료</text>
+<line x1="480" y1="100" x2="516" y2="100" stroke="#a5b4fc" stroke-width="1.5" marker-end="url(#c-teal)"/>
+<text x="498" y="92" text-anchor="middle" font-size="10" fill="#a5b4fc">wake + 선택</text>
+
+<!-- Back arrow: READING → EMPTY -->
+<path d="M580 128 Q580 170 100 170 Q100 128 100 128" fill="none" stroke="#6e7681" stroke-width="1.2" stroke-dasharray="4 2" marker-end="url(#c0)"/>
+<text x="340" y="184" text-anchor="middle" font-size="10" fill="#6e7681">읽기 완료 → 슬롯 반환</text>
+
+<!-- eventfd note -->
+<text x="420" y="60" text-anchor="middle" font-size="10" fill="#fbbf24">↑ eventfd notify → Qt wake</text>
+</svg>
+<p>WRITING 슬롯은 Reader가 절대 접근하지 않음 → lock 불필요</p>
+</div>
+
+<h3>4-3. eventfd 알림 흐름</h3>
+<p>Qt의 <code>data_consumer</code>가 폴링 없이 새 프레임을 감지하는 방법.
+<code>read()</code> 호출 시 신호가 올 때까지 스레드가 완전히 슬립한다.</p>
+
+<pre><span class="comment">// BridgeDaemon (reassembly_shm) — 새 프레임 완성 시</span>
+<span class="type">uint64_t</span> val = <span class="num">1</span>;
+<span class="fn">write</span>(efd, &val, <span class="kw">sizeof</span>(val));   <span class="comment">// Qt 깨우기</span>
+
+<span class="comment">// Qt (data_consumer) — 블로킹 대기</span>
+<span class="type">uint64_t</span> val;
+<span class="fn">read</span>(efd, &val, <span class="kw">sizeof</span>(val));    <span class="comment">// 신호 올 때까지 sleep</span>
+<span class="type">int</span> slot = <span class="fn">atomic_load</span>(&shm->img_ready_idx);
+<span class="fn">render_frame</span>(shm->img_slots[slot].data);</pre>
+
+
+<!-- ─── 5. 스레드 우선순위 ──────────────────────────────────────── -->
+<h2>5. 스레드 우선순위</h2>
+<p>RPi에서 <code>SCHED_FIFO</code> 사용 시 root 권한 필요. 우선순위는 숫자가 클수록 높다.</p>
+
+<table>
+  <thead><tr><th>스레드</th><th>우선순위</th><th>이유</th></tr></thead>
+  <tbody>
+    <tr><td>jetson_tx</td><td><span class="stars">★★★★★</span></td><td style="color:#e6edf3">정지 커맨드·heartbeat 지연 불허. 가장 높게.</td></tr>
+    <tr><td>protocol_timer</td><td><span class="stars">★★★★★</span></td><td style="color:#e6edf3">ACK timeout 정확해야 재전송 타이밍이 맞음</td></tr>
+    <tr><td>jetson_rx</td><td><span class="stars">★★★★</span></td><td>커널 수신 버퍼 overflow 방지</td></tr>
+    <tr><td>reassembly_shm</td><td><span class="stars">★★★</span></td><td>재조립 지연 → Qt 화면 끊김</td></tr>
+    <tr><td>pc_link</td><td><span class="stars">★★★</span></td><td>PC 통신은 로봇 제어보다 낮은 우선순위</td></tr>
+    <tr><td>data_consumer (Qt)</td><td><span class="stars">★★★</span></td><td>UI 프레임 부드럽게 유지</td></tr>
+    <tr><td>main / watchdog</td><td><span class="stars">★★</span></td><td>초기화 · 재시작 정책만 담당</td></tr>
+    <tr><td>logger (큐 drain)</td><td><span class="stars">★</span></td><td>실시간 경로 절대 방해 금지</td></tr>
+  </tbody>
+</table>
+
+<pre><span class="comment">// 스레드 생성 시 우선순위 지정 예시</span>
+pthread_attr_t attr;
+<span class="kw">struct</span> sched_param param;
+<span class="fn">pthread_attr_init</span>(&attr);
+<span class="fn">pthread_attr_setschedpolicy</span>(&attr, SCHED_FIFO);
+param.sched_priority = <span class="num">80</span>;             <span class="comment">// jetson_tx</span>
+<span class="fn">pthread_attr_setschedparam</span>(&attr, &param);
+<span class="fn">pthread_create</span>(&tx_tid, &attr, <span class="fn">jetson_tx_func</span>, NULL);</pre>
+
+
+<!-- ─── 6. 핵심 개념 요약 ──────────────────────────────────────── -->
+<h2>6. 핵심 개념</h2>
+
+<div class="card card-teal" style="margin-bottom: 12px;">
+  <h3 style="margin-top:0">Triple Buffer</h3>
+  <p style="margin-bottom: 8px;">Writer와 Reader가 서로 다른 슬롯을 쓰기 때문에 mutex 없이 동작한다.
+  Write 완료 시 <code>atomic_store(&ready_idx, slot)</code> 하나로 최신 슬롯을 공개한다.
+  Reader는 <code>atomic_load</code> 로 최신 슬롯을 확인하고 읽는다.</p>
+  <p style="margin:0; font-size:13px; color:#134e4a;">적용: SHM-IMG (이미지), SHM-MAP (라이다) — 크고 자주 갱신되는 데이터</p>
+</div>
+
+<div class="card card-amber" style="margin-bottom: 12px;">
+  <h3 style="margin-top:0">rwlock (Reader-Writer Lock)</h3>
+  <p style="margin-bottom: 8px;">여러 Reader 동시 읽기 허용, Writer는 배타적 점유.
+  <code>pthread_rwlockattr_setpshared(PTHREAD_PROCESS_SHARED)</code> 로 프로세스 간 공유 가능.
+  Lock 구간은 memcpy만 포함할 정도로 최대한 짧게 유지한다.</p>
+  <p style="margin:0; font-size:13px; color:#78350f;">적용: odom, SHM-META — 작고 단순한 데이터</p>
+</div>
+
+<div class="card card-blue" style="margin-bottom: 12px;">
+  <h3 style="margin-top:0">eventfd</h3>
+  <p style="margin-bottom: 8px;">폴링 없이 프로세스 간 신호를 전달하는 Linux 파일 디스크립터.
+  Bridge가 <code>write(efd, 1)</code> 하면 Qt의 <code>read(efd)</code> 블로킹이 풀린다.
+  epoll과 결합해 여러 이벤트를 하나의 루프에서 처리할 수도 있다.</p>
+  <p style="margin:0; font-size:13px; color:#1e4070;">사용처: reassembly_shm → data_consumer 프레임 완성 알림</p>
+</div>
+
+<div class="card card-coral">
+  <h3 style="margin-top:0">OSAL (OS Abstraction Layer)</h3>
+  <p style="margin-bottom: 8px;">시스템 콜을 래퍼 함수로 감싸 에러 처리·로그를 중앙화한다.
+  <code>sys_shm_open()</code>, <code>sys_create_thread()</code> 등 내부 구현이 바뀌어도
+  애플리케이션 코드는 영향을 받지 않는다.</p>
+  <p style="margin:0; font-size:13px; color:#7c2d12;">효과: 코드 품질 향상 · 디버깅 용이 · 이식성 확보</p>
+</div>
+
+
+<!-- ─── 7. 데이터 특성별 전략 ──────────────────────────────────── -->
+<h2>7. 데이터 특성별 통신 전략</h2>
+
+<table>
+  <thead><tr><th>데이터</th><th>크기</th><th>주기</th><th>프로토콜</th><th>동기화</th><th>손실 허용</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>이미지 (압축)</td>
+      <td style="color:#8b949e;">~30 KB</td>
+      <td style="color:#8b949e;">30 Hz</td>
+      <td><code>TCP</code></td>
+      <td style="color:#8b949e;">Triple Buffer</td>
+      <td style="color:#f97316;">❌ 프레임 깨짐</td>
+    </tr>
+    <tr>
+      <td>라이다 (2D)</td>
+      <td style="color:#8b949e;">~5 KB</td>
+      <td style="color:#8b949e;">10 Hz</td>
+      <td><code>UDP</code></td>
+      <td style="color:#8b949e;">Double Buffer</td>
+      <td style="color:#2dd4bf;">✅ 다음 스캔으로</td>
+    </tr>
+    <tr>
+      <td>라이다 (3D, decimation)</td>
+      <td style="color:#8b949e;">~50 KB</td>
+      <td style="color:#8b949e;">10 Hz</td>
+      <td><code>UDP</code> 분할</td>
+      <td style="color:#8b949e;">Triple Buffer</td>
+      <td style="color:#2dd4bf;">✅ 부분 손실 허용</td>
+    </tr>
+    <tr>
+      <td>Odometry</td>
+      <td style="color:#8b949e;">~200 B</td>
+      <td style="color:#8b949e;">50 Hz</td>
+      <td><code>UDP</code></td>
+      <td style="color:#8b949e;">rwlock</td>
+      <td style="color:#2dd4bf;">✅ 20 ms 후 새값</td>
+    </tr>
+    <tr>
+      <td>커맨드 (Qt→Jetson)</td>
+      <td style="color:#8b949e;">~50 B</td>
+      <td style="color:#8b949e;">이벤트</td>
+      <td><code>Unix Socket</code></td>
+      <td style="color:#8b949e;">POSIX MQ</td>
+      <td style="color:#f97316;">❌ 순서 보장 필수</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<!-- ─── 8. 검증 및 테스트 도구 ────────────────────────────────── -->
+<h2>8. 검증 및 테스트 도구</h2>
+
+<div class="two-col">
+  <div>
+    <h3>디버깅 도구</h3>
+    <table>
+      <thead><tr><th>도구</th><th>목적</th></tr></thead>
+      <tbody>
+        <tr><td>TSan</td><td style="color:#8b949e;">Race condition 탐지 (컴파일 옵션)</td></tr>
+        <tr><td>ASan</td><td style="color:#8b949e;">메모리 오염·overflow 탐지</td></tr>
+        <tr><td>helgrind</td><td style="color:#8b949e;">동기화 버그·lock 순서 검증</td></tr>
+        <tr><td>memcheck</td><td style="color:#8b949e;">메모리 누수·use-after-free</td></tr>
+        <tr><td>ipcs / ls /dev/shm</td><td style="color:#8b949e;">좀비 공유 메모리 확인</td></tr>
+      </tbody>
+    </table>
+    <pre style="margin-top:12px;font-size:12px;"><span class="comment"># TSan + ASan 동시 적용</span>
+gcc -fsanitize=thread,address \
+    -g -o bridge main.c</pre>
+  </div>
+  <div>
+    <h3>성능 측정 도구</h3>
+    <table>
+      <thead><tr><th>도구</th><th>목적</th></tr></thead>
+      <tbody>
+        <tr><td>타임스탬프 헤더</td><td style="color:#8b949e;">end-to-end latency 측정</td></tr>
+        <tr><td>CSV + matplotlib</td><td style="color:#8b949e;">개선 전후 시각화</td></tr>
+        <tr><td>iperf3</td><td style="color:#8b949e;">무선 구간 처리량·손실</td></tr>
+        <tr><td>tcpdump</td><td style="color:#8b949e;">실제 패킷 캡처·분석</td></tr>
+        <tr><td>Mock Receiver</td><td style="color:#8b949e;">Jetson 없이 가짜 데이터 주입</td></tr>
+      </tbody>
+    </table>
+    <pre style="margin-top:12px;font-size:12px;"><span class="comment"># 무선 처리량 측정</span>
+iperf3 -c [RPi IP] -u \
+       -b 10M --logfile log.txt</pre>
+  </div>
+</div>
+
+
+<!-- ─── 9. 구현 로드맵 ─────────────────────────────────────────── -->
+<h2>9. 구현 로드맵</h2>
+
+<div class="roadmap">
+  <div class="rm-item">
+    <div class="rm-num">1</div>
+    <div class="rm-body">
+      <h4>shm_def.h 설계</h4>
+      <p><code>SharedData</code> 구조체 정의 · 슬롯 상태 enum · MAX 크기 상수.
+      모든 앱이 이 헤더 하나만 include — 크기 불일치 버그 원천 차단.</p>
+    </div>
+  </div>
+  <div class="rm-item">
+    <div class="rm-num">2</div>
+    <div class="rm-body">
+      <h4>BridgeDaemon SHM 초기화</h4>
+      <p><code>shm_open</code> + <code>mmap</code> + rwlock/atomic 초기화 래퍼(OSAL).
+      Bridge가 SHM을 먼저 생성, Qt는 나중에 attach (재시도 루프 필요).</p>
+    </div>
+  </div>
+  <div class="rm-item">
+    <div class="rm-num">3</div>
+    <div class="rm-body">
+      <h4>eventfd 생성 및 알림 흐름</h4>
+      <p><code>eventfd(0, EFD_SEMAPHORE)</code> 생성 · reassembly_shm write 완료 시 notify.
+      Qt data_consumer는 <code>read(efd)</code> 블로킹으로 대기.</p>
+    </div>
+  </div>
+  <div class="rm-item">
+    <div class="rm-num">4</div>
+    <div class="rm-body">
+      <h4>reassembly_shm Triple Buffer write 로직</h4>
+      <p>빈 슬롯 선택 → WRITING 마킹 → memcpy → <code>atomic_store(ready_idx)</code> → eventfd notify.
+      3D 라이다면 zero-copy(직접 접근) 고려.</p>
+    </div>
+  </div>
+  <div class="rm-item">
+    <div class="rm-num">5</div>
+    <div class="rm-body">
+      <h4>Qt data_consumer SHM read + UI emit</h4>
+      <p>eventfd 대기 → <code>atomic_load(ready_idx)</code> → memcpy → Qt signal emit.
+      네트워크 스레드와 UI 스레드 분리 필수 (프리징 방지).</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─── 10. 이전 논의 요약 ─────────────────────────────────────── -->
+<h2>10. 주요 설계 결정 근거</h2>
+
+<div class="card" style="margin-bottom: 10px;">
+  <strong style="color: #e6edf3; font-size: 14px;">왜 EtherCAT 대신 UDP인가?</strong>
+  <p style="margin: 6px 0 0; font-size: 13px;">EtherCAT은 IEEE 802.3 유선 전용 프로토콜로, CSMA/CA 기반 Wi-Fi에서는 나노초 결정론 불가.
+  UDP + 고정 주기 타이머 송신 + 우선순위 큐로 수 ms 수준 안정성을 달성한다.</p>
+</div>
+<div class="card" style="margin-bottom: 10px;">
+  <strong style="color: #e6edf3; font-size: 14px;">왜 gRPC가 아닌 소켓인가?</strong>
+  <p style="margin: 6px 0 0; font-size: 13px;">gRPC는 소켓 위에 HTTP/2 + TLS + Protobuf 직렬화 레이어를 추가한 것. RPi ↔ Qt는 같은 기기 IPC이므로 소켓(또는 Unix Domain Socket)이 최적.</p>
+</div>
+<div class="card" style="margin-bottom: 10px;">
+  <strong style="color: #e6edf3; font-size: 14px;">왜 Lock-free Queue가 아닌 POSIX MQ인가?</strong>
+  <p style="margin: 6px 0 0; font-size: 13px;">커맨드는 초당 10~20회 수준. Lock-free가 빛을 발하는 것은 초당 수십만 건. 지금 규모에선 POSIX Message Queue로 충분하고 구현 난이도도 낮다.</p>
+</div>
+<div class="card">
+  <strong style="color: #e6edf3; font-size: 14px;">왜 중개 앱 없이 직접 공유 메모리인가?</strong>
+  <p style="margin: 6px 0 0; font-size: 13px;">앱이 3개(Receiver, Qt, Sender) 수준이면 중개 앱은 오버엔지니어링.
+  직접 공유 + pthread_rwlock/atomic으로 충분하며 프로세스를 하나 줄일 수 있다.</p>
+</div>
+
+<hr class="divider">
+<p class="footnote">마지막 업데이트: 2025 · 4족 보행 로봇 관제 시스템 프로젝트</p>
+</div>
+</body>
+</html>
